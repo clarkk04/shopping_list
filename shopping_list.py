@@ -27,7 +27,7 @@ def query_db(query, args=(), one=False):
 def home():
     sql = "SELECT * FROM user;"
     results = query_db(sql)
-    return render_template("index.html")
+    return render_template("login.html",results=results)
 
 def create_file(name):
     f = open(f"{name}.txt", "x")

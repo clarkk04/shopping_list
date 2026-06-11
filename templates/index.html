@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     <title>Placeholder</title>
 </head>
 <body>
@@ -12,12 +13,7 @@
             <h2>Shopping List</h2>
         </nav>
     </header>
-    <main>
-        {% block body %}
-        {% endblock %}
-        <section class="login">
-            <h1>LOG IN</h1>
-        </section>
-    </main>
+    {% block body %}
+    {% endblock %}
 </body>
 </html>
