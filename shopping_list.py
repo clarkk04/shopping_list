@@ -1,4 +1,4 @@
-from flask import Flask, g
+from flask import Flask, g, render_template
 import sqlite3
 
 DATABASE = 'shopping_list_database.db'
@@ -27,7 +27,7 @@ def query_db(query, args=(), one=False):
 def home():
     sql = "SELECT * FROM user;"
     results = query_db(sql)
-    return str(results)
+    return render_template("index.html")
 
 def create_file(name):
     f = open(f"{name}.txt", "x")
