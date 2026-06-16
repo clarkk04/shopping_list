@@ -8,17 +8,20 @@ nav{
     top: 0;
     left: 0;
 }
+a{
+    padding: 2% 6%;
+    position: auto;
+}
 nav h2{
     padding: 2% 6%;
     position: auto;
 }
 body{
     background-color: #f6f9f9;
-}
-main{
     width: 80%;
-    margin: 40px auto;
+    margin: 180px auto;
 }
+
 h1{
     color: black;
 }

@@ -29,6 +29,10 @@ def home():
     results = query_db(sql)
     return render_template("login.html",results=results)
 
+@app.route("/my_lists")
+def my_lists():
+    return render_template("my_lists.html")
+
 def create_file(name):
     f = open(f"{name}.txt", "x")
     f.close()
