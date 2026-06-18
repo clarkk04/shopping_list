@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-    <title>Placeholder</title>
+    <title>Shopping List</title>
 </head>
 <body>
     <header>
         <nav>
-            <h2>Shopping List</h2>
-            <a href="{{ url_for('my_lists')}}">My</a>
+            <a href="{{ url_for('home')}}">Shopping List</a>
+            <a href="{{ url_for('my_lists')}}">My Lists</a>
         </nav>
     </header>
     {% block body %}

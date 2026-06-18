@@ -1,4 +1,4 @@
-from flask import Flask, g, render_template
+from flask import Flask, g, request, render_template
 import sqlite3
 
 DATABASE = 'shopping_list_database.db'
@@ -28,6 +28,8 @@ def home():
     sql = "SELECT * FROM user;"
     results = query_db(sql)
     return render_template("login.html",results=results)
+
+@app.route("/", methods =["GET", "POST"])
 
 @app.route("/my_lists")
 def my_lists():

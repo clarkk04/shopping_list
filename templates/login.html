@@ -4,5 +4,18 @@
     {% for username in results %}
         <h2>WOW</h2>
         {% endfor %}
+        <form method="post">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username"><br>
+            <lable for="password">Password:</lable><br>
+            <input type="password" id="password" name="password"><br>            
+            <input type="submit" value="Submit">
+        </form>
+        <form>
+            <input list="food">
+            <datalist id="food">
+                <option value="apple">
+                <option value="pineapple">
+        </form>
 </div>
 {% endblock  %}
