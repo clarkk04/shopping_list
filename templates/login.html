@@ -3,6 +3,9 @@
 <div>
     {% for username in results %}
         <h2>WOW</h2>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
         {% endfor %}
         <form method="post">
             <label for="username">Username:</label><br>

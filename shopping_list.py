@@ -1,10 +1,15 @@
-from flask import Flask, g, request, render_template
+from flask import Flask, g, request, render_template, redirect, url_for
 import sqlite3
 
 DATABASE = 'shopping_list_database.db'
 
 app = Flask(__name__)
 
+# Test username and password
+USERNAME = "test"
+PASSWORD = "password"
+
+# Database connection functions
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -30,6 +35,14 @@ def home():
     return render_template("login.html",results=results)
 
 @app.route("/", methods =["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        if username == USERNAME and password == PASSWORD:
+            return redirect(url_for("my_lists"))
+        else:
+            return render_template("login.html", error="Invalid username or password")
 
 @app.route("/my_lists")
 def my_lists():
