@@ -3,14 +3,15 @@ nav{
     background-color: #6CB8FF;
     color: #000000;
     width: 100%;
-    height: 15%;
+    height: 120px;
     position: fixed;
     top: 0;
     left: 0;
 }
 a{
-    padding: 2% 6%;
-    position: auto;
+    padding: 20px 80px;
+    color: black;
+    font-size: 40px;
 }
 nav h2{
     padding: 2% 6%;
@@ -29,4 +30,14 @@ section{
     padding: 100px;
     margin-top: 15%;
     background-color: rgb(233, 240, 238);
+}
+.login{
+    padding: 50px 0;
+    background-color: #cccccc;
+    text-align: center;
+    font-size: 40px;
+}
+input[type="text"], input[type="password"]{
+    font-size: 28px;
+    height: 1.2em;
 }
