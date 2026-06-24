@@ -32,11 +32,10 @@ def query_db(query, args=(), one=False):
 def home():
     sql = "SELECT * FROM user;"
     results = query_db(sql)
-    return render_template("login.html",results=results)
+    return render_template("login.html",results=results, login = "Sign Up")
 
 @app.route("/", methods =["GET", "POST"])
 def login():
-    error = ""
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -45,10 +44,17 @@ def login():
         else:
             return render_template("login.html", error="Invalid username or password")
 
+@app.route("/", methods =["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
 @app.route("/my_lists")
 def my_lists():
     return render_template("my_lists.html")
 
+# IDEAS
 def create_file(name):
     f = open(f"{name}.txt", "x")
     f.close()
@@ -59,6 +65,7 @@ def delete_file(name):
         os.remove(f"{name}.txt")
     else:
         print(f"name does not exist")
+# Idea end
 
 if __name__ == "__main__":
     app.run(debug=True)

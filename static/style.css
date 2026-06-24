@@ -7,15 +7,12 @@ nav{
     position: fixed;
     top: 0;
     left: 0;
+    display: flex;
 }
 a{
-    padding: 20px 80px;
+    padding: 30px 80px;
     color: black;
     font-size: 40px;
-}
-nav h2{
-    padding: 2% 6%;
-    position: auto;
 }
 body{
     background-color: #f6f9f9;
@@ -32,7 +29,7 @@ section{
     background-color: rgb(233, 240, 238);
 }
 .login{
-    padding: 50px 0;
+    padding: 2% 0;
     background-color: #cccccc;
     text-align: center;
     font-size: 40px;
