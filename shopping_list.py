@@ -1,19 +1,11 @@
 from flask import Flask, g, request, render_template, redirect, url_for
-from flask_mysqldb import MySQL
 import sqlite3
 
 DATABASE = 'shopping_list_database.db'
 
 app = Flask(__name__)
 
-app.config['MYSQL_HOST'] = '127.0.0.1:5000'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
-app.config['MYSQL_DB'] = 'user'
-
-mysql=MySQL(app)
-
-# Test username and password
+# Test username and password (Temporary)
 USERNAME = "test"
 PASSWORD = "password"
 
@@ -40,8 +32,9 @@ def query_db(query, args=(), one=False):
 def home():
     sql = "SELECT * FROM user;"
     results = query_db(sql)
-    return render_template("login.html",results=results, login = "Sign Up")
+    return render_template("login.html",results=results, login = "signup")
 
+# Login Page
 @app.route("/", methods =["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -50,24 +43,26 @@ def login():
         if username == USERNAME and password == PASSWORD:
             return redirect(url_for("my_lists"))
         else:
-            return render_template("login.html", error="Invalid username or password", login="Sign Up")
+            return render_template("login.html", error="Invalid username or password", login="signup")
 
+#Sign Up Page
 @app.route("/", methods =["GET", "POST"])
 def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        cursor = mysql.connection.cursor(MySQLdb.cursor.DictCursor)
+        cursor = DATABASE.connection.cursor(cursor.DictCursor)
         cursor.execute("SELECT * FROM user WHERE username = %s", (username))
         user = cursor.fetchone()
         if user:
             error = "Exist"
         else:
             cursor.execute("INSERT INTO user VALUES (NULL, %s, %s)", (username, password))
-            mysql.connection.commit()
+            DATABASE.connection.commit()
             error = "Sucess"
-            return render_template("login.html", error="Invalid username or password", login="Login")
+            return render_template("login.html", error="Invalid username or password", login="login")
 
+# My lists Page
 @app.route("/my_lists")
 def my_lists():
     return render_template("my_lists.html")
