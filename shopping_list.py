@@ -1,9 +1,17 @@
 from flask import Flask, g, request, render_template, redirect, url_for
+from flask_mysqldb import MySQL
 import sqlite3
 
 DATABASE = 'shopping_list_database.db'
 
 app = Flask(__name__)
+
+app.config['MYSQL_HOST'] = '127.0.0.1:5000'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_DB'] = 'user'
+
+mysql=MySQL(app)
 
 # Test username and password
 USERNAME = "test"
@@ -42,13 +50,23 @@ def login():
         if username == USERNAME and password == PASSWORD:
             return redirect(url_for("my_lists"))
         else:
-            return render_template("login.html", error="Invalid username or password")
+            return render_template("login.html", error="Invalid username or password", login="Sign Up")
 
 @app.route("/", methods =["GET", "POST"])
 def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        cursor = mysql.connection.cursor(MySQLdb.cursor.DictCursor)
+        cursor.execute("SELECT * FROM user WHERE username = %s", (username))
+        user = cursor.fetchone()
+        if user:
+            error = "Exist"
+        else:
+            cursor.execute("INSERT INTO user VALUES (NULL, %s, %s)", (username, password))
+            mysql.connection.commit()
+            error = "Sucess"
+            return render_template("login.html", error="Invalid username or password", login="Login")
 
 @app.route("/my_lists")
 def my_lists():
