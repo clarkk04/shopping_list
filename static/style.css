@@ -18,20 +18,18 @@ body{
     background-color: #f6f9f9;
     width: 80%;
     margin: 180px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
-
-h1{
-    color: black;
-}
-section{
-    padding: 100px;
-    margin-top: 15%;
-    background-color: rgb(233, 240, 238);
+div{
+    background-color: #cccccc;
+    padding: 1% 0 3%;
+    text-align: center;
 }
 .login{
-    padding: 2% 0;
-    background-color: #cccccc;
-    text-align: center;
+    width: 65%;
     font-size: 40px;
 }
 input[type="text"], input[type="password"]{

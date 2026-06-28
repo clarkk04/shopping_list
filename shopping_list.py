@@ -27,12 +27,12 @@ def query_db(query, args=(), one=False):
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
-
+# Not in Use
 @app.route("/")
 def home():
     sql = "SELECT * FROM user;"
     results = query_db(sql)
-    return render_template("login.html",results=results, login = "signup")
+    return render_template("login.html",results=results)
 
 # Login Page
 @app.route("/", methods =["GET", "POST"])
@@ -43,7 +43,7 @@ def login():
         if username == USERNAME and password == PASSWORD:
             return redirect(url_for("my_lists"))
         else:
-            return render_template("login.html", error="Invalid username or password", login="signup")
+            return render_template("login.html", error="Invalid username or password")
 
 #Sign Up Page
 @app.route("/", methods =["GET", "POST"])
@@ -60,7 +60,7 @@ def signup():
             cursor.execute("INSERT INTO user VALUES (NULL, %s, %s)", (username, password))
             DATABASE.connection.commit()
             error = "Sucess"
-            return render_template("login.html", error="Invalid username or password", login="login")
+        return render_template("login.html", error="Invalid username or password")
 
 # My lists Page
 @app.route("/my_lists")
