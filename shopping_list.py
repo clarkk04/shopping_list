@@ -5,10 +5,6 @@ DATABASE = 'shopping_list_database.db'
 
 app = Flask(__name__)
 
-# Test username and password (Temporary)
-USERNAME = "test"
-PASSWORD = "password"
-
 # Database connection functions
 def get_db():
     db = getattr(g, '_database', None)
@@ -37,30 +33,35 @@ def home():
 # Login Page
 @app.route("/", methods =["GET", "POST"])
 def login():
+    error = ''
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        if username == USERNAME and password == PASSWORD:
+        sql = "SELECT * FROM user WHERE username = ? AND password = ?;"
+        user = query_db(sql, [username, password], one=True)
+        if user:
             return redirect(url_for("my_lists"))
         else:
-            return render_template("login.html", error="Invalid username or password")
+            error = "Invalid username or password"
+    return render_template("login.html", error=error)
 
 #Sign Up Page
 @app.route("/", methods =["GET", "POST"])
 def signup():
+    error = ''
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        cursor = DATABASE.connection.cursor(cursor.DictCursor)
-        cursor.execute("SELECT * FROM user WHERE username = %s", (username))
-        user = cursor.fetchone()
+        sql = "SELECT * FROM user WHERE username = ?"
+        user = query_db(sql, [username])
         if user:
-            error = "Exist"
+            return render_template("signup.html", error="Exist")
         else:
-            cursor.execute("INSERT INTO user VALUES (NULL, %s, %s)", (username, password))
+            sql = "INSERT INTO user VALUES (NULL, ?, ?)"
+            user = query_db(sql, [username, password])
             DATABASE.connection.commit()
             error = "Sucess"
-        return render_template("login.html", error="Invalid username or password")
+    return render_template("signup.html", error=error)
 
 # My lists Page
 @app.route("/my_lists")
