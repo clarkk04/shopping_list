@@ -23,15 +23,8 @@ def query_db(query, args=(), one=False):
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
-# Not in Use
-@app.route("/")
-def home():
-    sql = "SELECT * FROM user;"
-    results = query_db(sql)
-    return render_template("login.html",results=results)
-
 # Login Page
-@app.route("/", methods =["GET", "POST"])
+@app.route("/login", methods =["GET", "POST"])
 def login():
     error = ''
     if request.method == "POST":
@@ -46,7 +39,7 @@ def login():
     return render_template("login.html", error=error)
 
 #Sign Up Page
-@app.route("/", methods =["GET", "POST"])
+@app.route("/signup", methods =["GET", "POST"])
 def signup():
     error = ''
     if request.method == "POST":
@@ -57,10 +50,11 @@ def signup():
         if user:
             return render_template("signup.html", error="Exist")
         else:
-            sql = "INSERT INTO user VALUES (NULL, ?, ?)"
+            sql = "INSERT INTO user VALUES (NULL, ?, ?, NULL)"
             user = query_db(sql, [username, password])
-            DATABASE.connection.commit()
+            g._database.commit()
             error = "Sucess"
+            return redirect(url_for("login", error=error))
     return render_template("signup.html", error=error)
 
 # My lists Page
