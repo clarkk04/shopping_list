@@ -48,7 +48,7 @@ def signup():
         sql = "SELECT * FROM user WHERE username = ?"
         user = query_db(sql, [username])
         if user:
-            return render_template("signup.html", error="Exist")
+            error="Exist"
         else:
             sql = "INSERT INTO user VALUES (NULL, ?, ?, NULL)"
             user = query_db(sql, [username, password])
