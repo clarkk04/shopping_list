@@ -1,7 +1,9 @@
 from flask import Flask, g, request, render_template, redirect, url_for
 import sqlite3
+import os
 
-DATABASE = 'shopping_list_database.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(BASE_DIR, 'shopping_list_database.db')
 
 app = Flask(__name__)
 
@@ -18,11 +20,9 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-def query_db(query, args=(), one=False):
-    cur = get_db().execute(query, args)
-    rv = cur.fetchall()
-    cur.close()
-    return (rv[0] if rv else None) if one else rv
+def query_db(query, args=(), one=False, commit=False):
+    db = get_db()
+    cur = db.execute(query, args)
 # Login Page
 @app.route("/login", methods =["GET", "POST"])
 def login():
@@ -50,11 +50,9 @@ def signup():
         if user:
             error="Exist"
         else:
-            sql = "INSERT INTO user VALUES (NULL, ?, ?, NULL)"
-            user = query_db(sql, [username, password])
-            g._database.commit()
-            error = "Sucess"
-            return redirect(url_for("login", error=error))
+            sql = "INSERT INTO user (username, password) VALUES (?, ?)"
+            query_db(sql, [username, password], commit=True)
+            return redirect(url_for("login", error="Success"))
     return render_template("signup.html", error=error)
 
 # My lists Page
@@ -62,13 +60,17 @@ def signup():
 def my_lists():
     return render_template("my_lists.html")
 
+# List Page (maybe temporary)
+@app.route("/list")
+def list():
+    return render_template("list.html")
+
 # IDEAS
 def create_file(name):
     f = open(f"{name}.txt", "x")
     f.close()
 
 def delete_file(name):
-    import os
     if os.path.exists(f"{name}.txt"):
         os.remove(f"{name}.txt")
     else:

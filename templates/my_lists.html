@@ -1,12 +1,24 @@
 {% extends "index.html" %}
 {% block body %}
-<div>
-    <h2>My Lists</h2>
-    <form>
-        <input list="food">
-        <datalist id="food">
-        <option value="apple">
-        <option value="pineapple">
-    </form>
-</div>
+<h2>My Lists</h2>
+<section class="list-table">
+    <div>
+        <h3>list_name</h3>
+    </div>
+    <div>
+        <h3>items total</h3>
+    </div>
+    <div>
+        <h3>items gotten</h3>
+    </div>
+    <div>
+        <h3>items not gotten</h3>
+    </div>
+    <div>
+        <h3>EDIT</h3>
+    </div>
+    <div>
+        <h3>DELETE</h3>
+    </div>
+</section>
 {% endblock  %}
