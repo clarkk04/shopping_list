@@ -1,10 +1,31 @@
 {% extends "index.html" %}
 {% block body %}
 <h2>List</h2>
-<form>
-    <input list="food">
-    <datalist id="food">
-    <option value="apple">
-    <option value="pineapple">
-</form>
+
+<table border="1" width="100%">
+    <tr align="center">
+        <th>Item Name</th>
+        <th>Quantity</th>
+        <th>Catergorisation</th>
+        <th>tick</th>
+    </tr>
+    <form>
+        <tr align="center">
+            <td>
+                <input list="food">
+                <datalist id="food">
+                <option value="apple">
+                <option value="pineapple">
+            </td>
+            <td><input type="number"></td>
+            <td>
+                <input list="food">
+                <datalist id="food">
+                <option value="apple">
+                <option value="pineapple">
+            </td>
+            <td><input type="checkbox"></td>
+        </tr>
+    </form>
+</table>
 {% endblock  %}
