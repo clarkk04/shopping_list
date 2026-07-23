@@ -20,9 +20,12 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-def query_db(query, args=(), one=False, commit=False):
-    db = get_db()
-    cur = db.execute(query, args)
+def query_db(query, args=(), one=False):
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
+
 # Login Page
 @app.route("/login", methods =["GET", "POST"])
 def login():
@@ -51,7 +54,8 @@ def signup():
             error="Exist"
         else:
             sql = "INSERT INTO user (username, password) VALUES (?, ?)"
-            query_db(sql, [username, password], commit=True)
+            query_db(sql, [username, password])
+            g._database.commit()
             return redirect(url_for("login", error="Success"))
     return render_template("signup.html", error=error)
 

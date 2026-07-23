@@ -41,3 +41,6 @@ input[type="text"], input[type="password"]{
     grid-template-columns: 3fr repeat(3, 1fr) 2fr 1fr;
     width: 100%;
 }
+ .list-column{
+    border: solid 1px black;
+ }

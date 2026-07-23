@@ -2,23 +2,36 @@
 {% block body %}
 <h2>My Lists</h2>
 <section class="list-table">
-    <div>
+    <div class="list-column">
         <h3>list_name</h3>
+        {% for name in list %}
+        <h4>{{ list['name'] }}</h4>
+        {% endfor %}
     </div>
-    <div>
+    <div class="list-column">
         <h3>items total</h3>
     </div>
-    <div>
+    <div class="list-column">
         <h3>items gotten</h3>
     </div>
-    <div>
+    <div class="list-column">
         <h3>items not gotten</h3>
     </div>
-    <div>
+    <div class="list-column">
         <h3>EDIT</h3>
     </div>
-    <div>
+    <div class="list-column">
         <h3>DELETE</h3>
     </div>
 </section>
+<table class="list-table">
+    <tr>
+        <th>list_name</th>
+        <th>items total</th>
+        <th>items gotten</th>
+        <th>items not gotten</th>
+        <th>EDIT</th>
+        <th>DELETE</th>
+    </tr>
+</table>
 {% endblock  %}
