@@ -60,14 +60,18 @@ def signup():
     return render_template("signup.html", error=error)
 
 # My lists Page
-@app.route("/my_lists")
+@app.route("/my_lists", methods = ["GET", "POST"])
 def my_lists():
-    return render_template("my_lists.html")
+    sql = "SELECT * FROM list;"
+    results = query_db(sql)
+    return render_template("my_lists.html", list=results)
 
 # List Page (maybe temporary)
-@app.route("/list")
+@app.route("/list", methods = ["GET", "POST"])
 def list():
-    return render_template("list.html")
+    sql = "SELECT * FROM list;"
+    results = query_db(sql)
+    return render_template("list.html", list=results)
 
 # IDEAS
 def create_file(name):
