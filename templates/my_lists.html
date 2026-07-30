@@ -11,27 +11,25 @@
     <div class="list-column">
         <h3>items total</h3>
         {% for item in list %}
-        <h4>{{ item[4] }}</h4>
+        <h4>{{ item[2] }}</h4>
         {% endfor %}
     </div>
     <div class="list-column">
         <h3>items gotten</h3>
         {% for item in list %}
-        <h4>{{ item[5] }}</h4>
+        <h4>{{ item[2] - item[7] }}</h4>
         {% endfor %}
     </div>
     <div class="list-column">
         <h3>items not gotten</h3>
         {% for item in list %}
-        <h4>{{ item[4]-item[5] }}</h4>
+        <h4>{{ item[2] }}</h4>
         {% endfor %}
     </div>
     <div class="list-column">
         <h3>EDIT</h3>
         {% for items in list %}
-        <form>
-            <input type="button" value="EDIT" style="margin-bottom: 18.72px; width: 40%;">
-        </form>
+        <h3><a href="{{ url_for('list')}}" style="font-size: medium;">EDIT</a></h3>
         {% endfor %}
     </div>
     <div class="list-column">

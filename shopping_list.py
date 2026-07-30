@@ -62,16 +62,17 @@ def signup():
 # My lists Page
 @app.route("/my_lists", methods = ["GET", "POST"])
 def my_lists():
-    sql = "SELECT * FROM lists;"
+    sql = """SELECT * FROM lists
+     INEER JOIN list_contents ON user_id=user_id;"""
     results = query_db(sql)
     return render_template("my_lists.html", list=results)
 
-# List Page (maybe temporary)
-@app.route("/lists", methods = ["GET", "POST"])
+# Table Page (maybe temporary)
+@app.route("/list", methods = ["GET", "POST"])
 def list():
-    sql = "SELECT * FROM lists;"
+    sql = "SELECT * FROM list_contents;"
     results = query_db(sql)
-    return render_template("lists.html", list=results)
+    return render_template("list.html", list=results)
 
 if __name__ == "__main__":
     app.run(debug=True)
