@@ -62,28 +62,16 @@ def signup():
 # My lists Page
 @app.route("/my_lists", methods = ["GET", "POST"])
 def my_lists():
-    sql = "SELECT * FROM list;"
+    sql = "SELECT * FROM lists;"
     results = query_db(sql)
     return render_template("my_lists.html", list=results)
 
 # List Page (maybe temporary)
-@app.route("/list", methods = ["GET", "POST"])
+@app.route("/lists", methods = ["GET", "POST"])
 def list():
-    sql = "SELECT * FROM list;"
+    sql = "SELECT * FROM lists;"
     results = query_db(sql)
-    return render_template("list.html", list=results)
-
-# IDEAS
-def create_file(name):
-    f = open(f"{name}.txt", "x")
-    f.close()
-
-def delete_file(name):
-    if os.path.exists(f"{name}.txt"):
-        os.remove(f"{name}.txt")
-    else:
-        print(f"name does not exist")
-# Idea end
+    return render_template("lists.html", list=results)
 
 if __name__ == "__main__":
     app.run(debug=True)
