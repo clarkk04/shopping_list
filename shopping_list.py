@@ -63,7 +63,7 @@ def signup():
 @app.route("/my_lists", methods = ["GET", "POST"])
 def my_lists():
     sql = """SELECT * FROM lists
-     INEER JOIN list_contents ON user_id=user_id;"""
+     INNER JOIN list_contents ON user_id=user_id;"""
     results = query_db(sql)
     return render_template("my_lists.html", list=results)
 

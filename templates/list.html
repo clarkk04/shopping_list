@@ -1,15 +1,33 @@
 {% extends "index.html" %}
 {% block body %}
 <h2>List</h2>
-
-<table border="1" width="100%">
+<form method="post">
+<table border="1">
     <tr align="center">
         <th>Item Name</th>
         <th>Quantity</th>
         <th>Catergorisation</th>
         <th>tick</th>
     </tr>
-    <form>
+    {% for item in list_contents %}
+    <tr>
+        <td>
+            <input list="food">
+            <datalist id="food">
+            <option value="apple">
+            <option value="pineapple">
+        </td>
+        <td><input type="number"></td>
+        <td>
+            <input list="food-type">
+            <datalist id="food-type">
+            <option value="fruit">
+            <option value="dairy">
+        </td>
+        <td><input type="checkbox"></td>
+    </tr>
+    {% endfor %}
+    
         <tr align="center">
             <td>
                 <input list="food">
@@ -26,6 +44,7 @@
             </td>
             <td><input type="checkbox"></td>
         </tr>
-    </form>
-</table>
+        </table>
+<input type="submit" value="save">
+</form>
 {% endblock  %}

@@ -29,7 +29,7 @@
     <div class="list-column">
         <h3>EDIT</h3>
         {% for items in list %}
-        <h3><a href="{{ url_for('list')}}" style="font-size: medium;">EDIT</a></h3>
+        <h3><a href="{{ url_for('list', list_id=items[0])}}" style="font-size: medium;">EDIT</a></h3>
         {% endfor %}
     </div>
     <div class="list-column">
