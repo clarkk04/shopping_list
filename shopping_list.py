@@ -27,7 +27,7 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 # Login Page
-@app.route("/login", methods =["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     error = ''
     if request.method == "POST":
@@ -42,7 +42,7 @@ def login():
     return render_template("login.html", error=error)
 
 #Sign Up Page
-@app.route("/signup", methods =["GET", "POST"])
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
     error = ''
     if request.method == "POST":
@@ -60,17 +60,18 @@ def signup():
     return render_template("signup.html", error=error)
 
 # My lists Page
-@app.route("/my_lists", methods = ["GET", "POST"])
+@app.route("/my_lists", methods=["GET", "POST"])
 def my_lists():
     sql = """SELECT * FROM lists
      INNER JOIN list_contents ON user_id=user_id;"""
     results = query_db(sql)
     return render_template("my_lists.html", list=results)
 
-# Table Page (maybe temporary)
-@app.route("/list", methods = ["GET", "POST"])
+# Table Page
+@app.route("/list", methods=["GET", "POST"])
 def list():
-    sql = "SELECT * FROM list_contents;"
+    sql = """SELECT * FROM list_contents
+    JOIN item ON item.item_id=list_contents.item_id;"""
     results = query_db(sql)
     return render_template("list.html", list=results)
 

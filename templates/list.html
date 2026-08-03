@@ -8,13 +8,23 @@
         <th>Quantity</th>
         <th>Catergorisation</th>
         <th>tick</th>
+        <th></th>
     </tr>
-    {% for item in list_contents %}
+    {% for item in list %}
     <tr>
+        <td>{{item[5]}}</td>
+        <td>{{item[2]}}</td>
+        <td>{{item[6]}}
+        </td>
+        <td><input type="checkbox"></td>
+        <td><input type="button" value="edit"></td>
+    </tr>
+    {% endfor %}
+    <tr align="center">
         <td>
             <input list="food">
             <datalist id="food">
-            <option value="apple">
+                <option value="apple">
             <option value="pineapple">
         </td>
         <td><input type="number"></td>
@@ -25,26 +35,9 @@
             <option value="dairy">
         </td>
         <td><input type="checkbox"></td>
+        <td><input type="button" value="edit"></td>
     </tr>
-    {% endfor %}
-    
-        <tr align="center">
-            <td>
-                <input list="food">
-                <datalist id="food">
-                <option value="apple">
-                <option value="pineapple">
-            </td>
-            <td><input type="number"></td>
-            <td>
-                <input list="food-type">
-                <datalist id="food-type">
-                <option value="fruit">
-                <option value="dairy">
-            </td>
-            <td><input type="checkbox"></td>
-        </tr>
-        </table>
+</table>
 <input type="submit" value="save">
 </form>
 {% endblock  %}
