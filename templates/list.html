@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block body %}
-<h2>List</h2>
-<form method="post">
+<h1>{{ current_list.list_name }}</h1>
+<form action="{{ url_for('list_route', list_id=list_id) }}" method="post">
 <table border="1">
     <tr align="center">
         <th>Item Name</th>
@@ -12,11 +12,11 @@
     </tr>
     {% for item in list %}
     <tr>
-        <td>{{item[5]}}</td>
-        <td>{{item[2]}}</td>
-        <td>{{item[6]}}
+        <td>{{ item.item_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.catergorisation }}
         </td>
-        <td><input type="checkbox"></td>
+        <td><input name="ticked" type="checkbox" {% if item.ticked %}checked{% endif %}></td>
         <td><input type="button" value="edit"></td>
     </tr>
     {% endfor %}
@@ -34,7 +34,7 @@
             <option value="fruit">
             <option value="dairy">
         </td>
-        <td><input type="checkbox"></td>
+        <td><input type="checkbox" disabled></td>
         <td><input type="button" value="edit"></td>
     </tr>
 </table>

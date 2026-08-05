@@ -54,7 +54,7 @@ def signup():
         username = request.form["username"]
         password = request.form["password"]
         sql = "SELECT * FROM user WHERE username = ?"
-        user = query_db(sql, [username])
+        user = query_db(sql, [username], one=True)
         if user:
             error="Exist"
         else:
@@ -67,18 +67,18 @@ def signup():
 # My lists Page
 @app.route("/my_lists", methods=["GET", "POST"])
 def my_lists():
-    sql = """SELECT * FROM lists
-     INNER JOIN list_contents ON user_id=user_id;"""
+    sql = "SELECT * FROM lists;"
     results = query_db(sql)
     return render_template("my_lists.html", list=results)
 
 # Table Page
-@app.route("/list", methods=["GET", "POST"])
-def list():
+@app.route("/list/<int:list_id>", methods=["GET", "POST"])
+def list_route(list_id=None):
     if request.method == "POST":
             item_name = request.form["item_name"]
             catergorisation = request.form["catergorisation"]
             item_quantity = request.form["quantity"]
+            item_ticked = 1 if request.form.get("ticked") else 0
             sql = "SELECT item_id FROM item WHERE item_name = ?"
             item_row = query_db(sql, [item_name], one=True)
             if item_row:
@@ -87,18 +87,25 @@ def list():
             else:
                 db = get_db()
                 cur = db.execute("INSERT INTO item (item_name, catergorisation) VALUES (?, ?)", [item_name, catergorisation])
+                db.commit()
                 item_id = cur.lastrowid
-                cur.close()
-            sql = "SELECT item_id FROM item WHERE item_name = ?"    
+                cur.close()    
             if item_quantity and item_id:
-                sql = "INSERT INTO list_contents (item_id, quantity) VALUES (?, ?)"
-                query_db(sql, [item_id, item_quantity])
+                sql = "INSERT INTO list_contents (list_id, item_id, quantity, ticked) VALUES (?, ?, ?, ?)"
+                query_db(sql, [list_id, item_id, item_quantity, item_ticked])
                 g._database.commit()
-            return redirect(url_for("list"))
-    sql = """SELECT * FROM list_contents
-            JOIN item ON item.item_id=list_contents.item_id;"""
-    results = query_db(sql)
-    return render_template("list.html", list=results)
+            return redirect(url_for("list_route", list_id=list_id))
+    current_list = None
+    if list_id:
+        sql_list = "SELECT * FROM lists WHERE list_id = ?"
+        current_list = query_db(sql_list, [list_id], one=True)
+        sql = """SELECT * FROM list_contents
+                JOIN item ON item.item_id=list_contents.item_id
+                WHERE list_contents.list_id = ?;"""
+        results = query_db(sql, [list_id])
+    else:
+        results = []
+    return render_template("list.html", list=results, list_id=list_id, current_list=current_list)
 
 if __name__ == "__main__":
     app.run(debug=True)
