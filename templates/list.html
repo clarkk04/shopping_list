@@ -22,14 +22,14 @@
     {% endfor %}
     <tr align="center">
         <td>
-            <input list="food">
+            <input name="item_name" list="food">
             <datalist id="food">
-                <option value="apple">
+            <option value="apple">
             <option value="pineapple">
         </td>
-        <td><input type="number"></td>
+        <td><input type="number" name="quantity" value="1"></td>
         <td>
-            <input list="food-type">
+            <input list="food-type" name="catergorisation">
             <datalist id="food-type">
             <option value="fruit">
             <option value="dairy">
