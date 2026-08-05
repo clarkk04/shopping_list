@@ -27,6 +27,10 @@ def query_db(query, args=(), one=False):
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
+@app.route("/")
+def home():
+    return redirect(url_for("login"))
+
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
 def login():
