@@ -1,47 +1,7 @@
 {% extends "index.html" %}
 {% block body %}
 <h2>My Lists</h2>
-<section class="list-table">
-    <div class="list-column">
-        <h3>list_name</h3>
-        {% for name in list %}
-        <h4>{{ name.list_name }}</h4>
-        {% endfor %}
-    </div>
-    <div class="list-column">
-        <h3>items total</h3>
-        {% for total in list %}
-        <h4>{{ total.items }}</h4>
-        {% endfor %}
-    </div>
-    <div class="list-column">
-        <h3>items gotten</h3>
-        {% for item in list %}
-        <h4>{{ item[7] }}</h4>
-        {% endfor %}
-    </div>
-    <div class="list-column">
-        <h3>items not gotten</h3>
-        {% for item in list %}
-        <h4>{{ item[2] }}</h4>
-        {% endfor %}
-    </div>
-    <div class="list-column">
-        <h3>EDIT</h3>
-        {% for items in list %}
-        <h3><a href="{{ url_for('list_route', list_id=items.list_id)}}" style="font-size: medium;">EDIT</a></h3>
-        {% endfor %}
-    </div>
-    <div class="list-column">
-        <h3>DELETE</h3>
-        {% for items in list %}
-        <form>
-            <input type="button" value="DELETE" style="margin-bottom: 18.72px; width: 60%;">
-        </form>
-        {% endfor %}
-    </div>
-</section>
-<table class="list-table">
+<table class="list-table" border="1">
     <tr>
         <th>list_name</th>
         <th>items total</th>
@@ -50,5 +10,17 @@
         <th>EDIT</th>
         <th>DELETE</th>
     </tr>
+    {% for contents in list %}
+    <tr>
+        <td>{{ contents.list_name }}</td>
+        <td>{{ contents.items }}</td>
+        <td>{{ contents.items }}</td>
+        <td>{{ contents.items }}</td>
+        <td><a href="{{ url_for('list_route', list_id=contents.list_id)}}" style="font-size: medium;">EDIT</a></td>
+        <td><form>
+            <input type="button" value="DELETE">
+        </form></td>
+    </tr>
+    {% endfor %}
 </table>
 {% endblock  %}
