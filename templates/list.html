@@ -19,6 +19,7 @@
         <td><input type="button" value="edit"></td>
     </tr>
     {% endfor %}
+    <!--Adding New items Row-->
     <tr align="center">
         <td>
             <input name="item_name" list="food">
@@ -34,9 +35,10 @@
             <option value="dairy">
         </td>
         <td><input type="checkbox" disabled></td>
-        <td><input type="button" value="edit"></td>
+        <td></td>
     </tr>
 </table>
+<!--Submit Button-->
 <input type="submit" value="save">
 </form>
 {% endblock  %}

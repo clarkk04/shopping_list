@@ -67,7 +67,13 @@ def signup():
 # My lists Page
 @app.route("/my_lists", methods=["GET", "POST"])
 def my_lists():
-    sql = "SELECT * FROM lists;"
+    sql = """SELECT lists.list_id, lists.list_name, 
+    COUNT(list_contents.item_id) AS total_items,
+    SUM(CASE WHEN list_contents.ticked = 1 THEN 1 ELSE 0 END) AS items_gotten,
+    SUM(CASE WHEN list_contents.ticked = 0 THEN 1 ELSE 0 END) AS items_not_gotten
+    FROM lists
+    LEFT JOIN list_contents ON lists.list_id = list_contents.list_id
+    GROUP BY lists.list_id;"""
     results = query_db(sql)
     return render_template("my_lists.html", list=results)
 

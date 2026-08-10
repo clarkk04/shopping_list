@@ -36,3 +36,7 @@ input[type="text"], input[type="password"]{
     font-size: 28px;
     height: 1.2em;
 }
+table{
+    width: 100%;
+    font-size: 3vh;
+}
