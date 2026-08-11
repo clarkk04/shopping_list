@@ -74,6 +74,11 @@ def signup():
             return redirect(url_for("login", error="Success"))
     return render_template("signup.html", error=error)
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
 # My lists Page
 @app.route("/my_lists", methods=["GET", "POST"])
 def my_lists():
@@ -84,8 +89,8 @@ def my_lists():
     #Create new list
     if request.method == "POST":
         list_name = request.form.get("list_name")
-        if list_name:  
-            cur = db.execute("INSERT INTO lists (list_name, user_id) VALUES (?, ?)", [list_name, current_user_id])
+        if list_name and list_name.strip():  
+            cur = db.execute("INSERT INTO lists (list_name, user_id) VALUES (?, ?)", [list_name.strip(), current_user_id])
             db.commit()
             list_id = cur.lastrowid
             cur.close()
