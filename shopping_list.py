@@ -40,8 +40,10 @@ def login():
         password = request.form["password"]
         sql = "SELECT * FROM user WHERE username = ? AND password = ?;"
         user = query_db(sql, [username, password], one=True)
+        #If the user exists
         if user:
-            return redirect(url_for("my_lists"))
+            login_id = user["user_id"]
+            return redirect(url_for("my_lists", login_id=login_id))
         else:
             error = "Invalid username or password"
     return render_template("login.html", error=error)
@@ -58,6 +60,7 @@ def signup():
         if user:
             error="Exist"
         else:
+            #If no user exists
             sql = "INSERT INTO user (username, password) VALUES (?, ?)"
             query_db(sql, [username, password])
             g._database.commit()
@@ -65,17 +68,31 @@ def signup():
     return render_template("signup.html", error=error)
 
 # My lists Page
-@app.route("/my_lists", methods=["GET", "POST"])
-def my_lists():
+@app.route("/my_lists/<int:login_id>", methods=["GET", "POST"])
+def my_lists(login_id=None):
+    if login_id is None:
+        return redirect(url_for("login"))
+    db = get_db()
+    #Create new list
+    if request.method == "POST":
+        list_name = request.form.get("list_name")
+        if list_name:  
+            cur = db.execute("INSERT INTO lists (list_name, user_id) VALUES (?, ?)", [list_name, login_id])
+            db.commit()
+            list_id = cur.lastrowid
+            cur.close()
+            return redirect(url_for('list_route', list_id=list_id, login_id=login_id))
+        return redirect(url_for("my_lists", login_id=login_id))
     sql = """SELECT lists.list_id, lists.list_name, 
     COUNT(list_contents.item_id) AS total_items,
     SUM(CASE WHEN list_contents.ticked = 1 THEN 1 ELSE 0 END) AS items_gotten,
     SUM(CASE WHEN list_contents.ticked = 0 THEN 1 ELSE 0 END) AS items_not_gotten
     FROM lists
     LEFT JOIN list_contents ON lists.list_id = list_contents.list_id
+    WHERE lists.user_id = ?
     GROUP BY lists.list_id;"""
-    results = query_db(sql)
-    return render_template("my_lists.html", list=results)
+    results = query_db(sql, [login_id])
+    return render_template("my_lists.html", list=results, login_id=login_id)
 
 # Table Page
 @app.route("/list/<int:list_id>", methods=["GET", "POST"])

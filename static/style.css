@@ -39,4 +39,19 @@ input[type="text"], input[type="password"]{
 table{
     width: 100%;
     font-size: 3vh;
+    text-align: center;
+}
+form table input[type="checkbox"]{
+    transform: scale(2);
+    margin: 10px 40px;
+    cursor: pointer;
+}
+form table th,
+form table td,
+table th,
+table td {
+    padding: 12px 25px;
+}
+form table td{
+    white-space: nowrap;
 }

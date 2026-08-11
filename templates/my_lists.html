@@ -23,4 +23,10 @@
     </tr>
     {% endfor %}
 </table>
+<br>
+<!--Create New List-->
+<form method="post" action="{{ url_for('my_lists', login_id=login_id) }}">
+    <input type="text" placeholder="New List" id="new_list" name="new_list"><br>
+    <input type="submit" value="Create List">
+</form>
 {% endblock  %}
