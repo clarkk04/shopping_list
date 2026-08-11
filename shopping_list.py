@@ -52,7 +52,7 @@ def login():
             session["username"] = user["username"]
             return redirect(url_for("my_lists"))
         else:
-            error = "Invalid username or password"
+            error = "Invalid Username or Password"
     return render_template("login.html", error=error)
 
 #Sign Up Page
@@ -62,10 +62,20 @@ def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        # Checks the validation for data entry
+        if username == '':
+            error = "Please Enter a Username"
+            return render_template("signup.html", error=error)
+        elif password =='':
+            error = "Please Enter a Password"
+            return render_template("signup.html", error=error)
+        elif username != username.strip() or password != password.strip():
+            error = "Username or Password cannot start or end with spaces"
+            return render_template("signup.html", error=error)
         sql = "SELECT * FROM user WHERE username = ?"
         user = query_db(sql, [username], one=True)
         if user:
-            error="Exist"
+            error = "This Username already exists"
         else:
             #If no user exists
             sql = "INSERT INTO user (username, password) VALUES (?, ?)"
