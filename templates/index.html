@@ -10,7 +10,7 @@
     <header>
         <nav>
             <a href="{{ url_for('home')}}">Shopping List</a>
-            <a href="{{ url_for('my_lists', login_id=login_id | default(0)) }}">My Lists</a>
+            <a href="{{ url_for('my_lists')}}">My Lists</a>
             <a>Help</a>
             <a>Account</a>
             <a href="{{ url_for('login')}}">Login</a>

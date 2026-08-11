@@ -15,7 +15,9 @@
         <td>{{ item.item_name }}</td>
         <td>{{ item.quantity }}</td>
         <td>{{ item.catergorisation }}</td>
-        <td><input name="ticked" type="checkbox" {% if item.ticked %}checked{% endif %}></td>
+        <td>
+            <input name="ticked_items" type="checkbox" value="{{ item.item_id }}" {% if item.ticked == 1 %}checked{% endif %}>
+        </td>
         <td><input type="button" value="edit"></td>
     </tr>
     {% endfor %}

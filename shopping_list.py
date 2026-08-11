@@ -1,11 +1,15 @@
-from flask import Flask, g, request, render_template, redirect, url_for
+from flask import Flask, g, request, render_template, redirect, url_for, session
 import sqlite3
 import os
+import secrets
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, 'shopping_list_database.db')
 
 app = Flask(__name__)
+
+# Generates secure secret unique key
+app.secret_key = secrets.token_hex(24)
 
 # Database connection functions
 def get_db():
@@ -29,6 +33,8 @@ def query_db(query, args=(), one=False):
 
 @app.route("/")
 def home():
+    if "user_id" in session:
+        return redirect(url_for("my_lists"))
     return redirect(url_for("login"))
 
 # Login Page
@@ -42,8 +48,9 @@ def login():
         user = query_db(sql, [username, password], one=True)
         #If the user exists
         if user:
-            login_id = user["user_id"]
-            return redirect(url_for("my_lists", login_id=login_id))
+            session["user_id"] = user["user_id"]
+            session["username"] = user["username"]
+            return redirect(url_for("my_lists"))
         else:
             error = "Invalid username or password"
     return render_template("login.html", error=error)
@@ -68,21 +75,22 @@ def signup():
     return render_template("signup.html", error=error)
 
 # My lists Page
-@app.route("/my_lists/<int:login_id>", methods=["GET", "POST"])
-def my_lists(login_id=None):
-    if login_id is None:
+@app.route("/my_lists", methods=["GET", "POST"])
+def my_lists():
+    if "user_id" not in session:
         return redirect(url_for("login"))
     db = get_db()
+    current_user_id = session["user_id"]
     #Create new list
     if request.method == "POST":
         list_name = request.form.get("list_name")
         if list_name:  
-            cur = db.execute("INSERT INTO lists (list_name, user_id) VALUES (?, ?)", [list_name, login_id])
+            cur = db.execute("INSERT INTO lists (list_name, user_id) VALUES (?, ?)", [list_name, current_user_id])
             db.commit()
             list_id = cur.lastrowid
             cur.close()
-            return redirect(url_for('list_route', list_id=list_id, login_id=login_id))
-        return redirect(url_for("my_lists", login_id=login_id))
+            return redirect(url_for('list_route', list_id=list_id))
+        return redirect(url_for("my_lists"))
     sql = """SELECT lists.list_id, lists.list_name, 
     COUNT(list_contents.item_id) AS total_items,
     SUM(CASE WHEN list_contents.ticked = 1 THEN 1 ELSE 0 END) AS items_gotten,
@@ -91,8 +99,8 @@ def my_lists(login_id=None):
     LEFT JOIN list_contents ON lists.list_id = list_contents.list_id
     WHERE lists.user_id = ?
     GROUP BY lists.list_id;"""
-    results = query_db(sql, [login_id])
-    return render_template("my_lists.html", list=results, login_id=login_id)
+    results = query_db(sql, [current_user_id]) or []
+    return render_template("my_lists.html", list=results)
 
 # Table Page
 @app.route("/list/<int:list_id>", methods=["GET", "POST"])
