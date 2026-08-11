@@ -91,6 +91,7 @@ def my_lists():
             cur.close()
             return redirect(url_for('list_route', list_id=list_id))
         return redirect(url_for("my_lists"))
+    # my_lists query
     sql = """SELECT lists.list_id, lists.list_name, 
     COUNT(list_contents.item_id) AS total_items,
     SUM(CASE WHEN list_contents.ticked = 1 THEN 1 ELSE 0 END) AS items_gotten,
@@ -105,6 +106,10 @@ def my_lists():
 # Table Page
 @app.route("/list/<int:list_id>", methods=["GET", "POST"])
 def list_route(list_id=None):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    db = get_db()
+    current_user_id = session["user_id"]
     if request.method == "POST":
             item_name = request.form["item_name"]
             catergorisation = request.form["catergorisation"]
@@ -116,24 +121,27 @@ def list_route(list_id=None):
                 # Item exists
                 item_id = item_row["item_id"]
             else:
-                db = get_db()
+                # Inserts item into item table if it doesn't exist
                 cur = db.execute("INSERT INTO item (item_name, catergorisation) VALUES (?, ?)", [item_name, catergorisation])
                 db.commit()
                 item_id = cur.lastrowid
                 cur.close()    
             if item_quantity and item_id:
+                # Adds the item into the list if there is the quantity and item_id
                 sql = "INSERT INTO list_contents (list_id, item_id, quantity, ticked) VALUES (?, ?, ?, ?)"
                 query_db(sql, [list_id, item_id, item_quantity, item_ticked])
                 g._database.commit()
             return redirect(url_for("list_route", list_id=list_id))
     current_list = None
     if list_id:
-        sql_list = "SELECT * FROM lists WHERE list_id = ?"
-        current_list = query_db(sql_list, [list_id], one=True)
+        sql_list = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
+        current_list = query_db(sql_list, [list_id, current_user_id], one=True)
+        if not current_list:
+            return redirect(url_for("my_lists"))
         sql = """SELECT * FROM list_contents
                 JOIN item ON item.item_id=list_contents.item_id
                 WHERE list_contents.list_id = ?;"""
-        results = query_db(sql, [list_id])
+        results = query_db(sql, [list_id]) or []
     else:
         results = []
     return render_template("list.html", list=results, list_id=list_id, current_list=current_list)

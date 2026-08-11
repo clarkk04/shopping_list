@@ -10,14 +10,20 @@
     <header>
         <nav>
             <a href="{{ url_for('home')}}">Shopping List</a>
-            <a href="{{ url_for('my_lists')}}">My Lists</a>
-            <a>Help</a>
-            <a>Account</a>
-            <a href="{{ url_for('login')}}">Login</a>
-            <a href="{{ url_for('signup')}}">Sign Up</a>
+            <!--If user is logged in-->
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('my_lists')}}">My Lists</a>
+                <a>Help</a>
+                <a>Account</a>
+            {% else %}
+                <a href="{{ url_for('login')}}">Login</a>
+                <a href="{{ url_for('signup')}}">Sign Up</a>
+            {% endif %}
         </nav>
     </header>
-    {% block body %}
-    {% endblock %}
+    <main class="content-container">
+        {% block body %}
+        {% endblock %}
+    </main>
 </body>
 </html>
