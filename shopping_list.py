@@ -72,6 +72,7 @@ def signup():
         elif username != username.strip() or password != password.strip():
             error = "Username or Password cannot start or end with spaces"
             return render_template("signup.html", error=error)
+        # Checks whether a user with the username already exists
         sql = "SELECT * FROM user WHERE username = ?"
         user = query_db(sql, [username], one=True)
         if user:
@@ -125,9 +126,10 @@ def list_route(list_id=None):
         return redirect(url_for("login"))
     db = get_db()
     current_user_id = session["user_id"]
+    # When user is adding a new item
     if request.method == "POST":
-            item_name = request.form["item_name"]
-            catergorisation = request.form["catergorisation"]
+            item_name = request.form["item_name"].title()
+            catergorisation = request.form["catergorisation"].title()
             item_quantity = request.form["quantity"]
             item_ticked = 1 if request.form.get("ticked") else 0
             sql = "SELECT item_id FROM item WHERE item_name = ?"

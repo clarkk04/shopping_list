@@ -16,7 +16,7 @@
         <td>{{ contents.total_items }}</td>
         <td>{{ contents.items_gotten }}</td>
         <td>{{ contents.items_not_gotten }}</td>
-        <td><a href="{{ url_for('list_route', list_id=contents.list_id)}}" style="font-size: medium;">EDIT</a></td>
+        <td><a href="{{ url_for('list_route', list_id=contents.list_id)}}">EDIT</a></td>
         <td><form>
             <input type="button" value="DELETE">
         </form></td>

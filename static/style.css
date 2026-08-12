@@ -67,7 +67,7 @@ main, .content-container {
     box-sizing: border-box;
 }
 
-h1, h2 {
+h1 {
     color: var(--text-colour);
     margin-bottom: 20px;
 }
@@ -166,7 +166,7 @@ input[type="submit"]:hover {
     background-color: var(--primary-hover);
 }
 
-input[value="edit"],
+input[value="EDIT"],
 a[href*="list_route"],
 a[href*="list/"] {
     color: var(--primary-colour);
