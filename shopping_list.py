@@ -44,7 +44,7 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        sql = "SELECT * FROM user WHERE username = ? AND password = ?;"
+        sql = "SELECT * FROM user WHERE LOWER(username) = LOWER(?) AND password = ?;"
         user = query_db(sql, [username, password], one=True)
         #If the user exists
         if user:
@@ -65,24 +65,26 @@ def signup():
         # Checks the validation for data entry
         if username == '':
             error = "Please Enter a Username"
-            return render_template("signup.html", error=error)
         elif password =='':
             error = "Please Enter a Password"
-            return render_template("signup.html", error=error)
         elif username != username.strip() or password != password.strip():
             error = "Username or Password cannot start or end with spaces"
-            return render_template("signup.html", error=error)
-        # Checks whether a user with the username already exists
-        sql = "SELECT * FROM user WHERE username = ?"
-        user = query_db(sql, [username], one=True)
-        if user:
-            error = "This Username already exists"
+        elif len(username) > 32:
+            error = "Username is too long (Maximum 32 characters)"
+        elif len(password) < 8:
+            error = "Password must be at least 8 characters long"
         else:
-            #If no user exists
-            sql = "INSERT INTO user (username, password) VALUES (?, ?)"
-            query_db(sql, [username, password])
-            g._database.commit()
-            return redirect(url_for("login", error="Success"))
+            # Checks whether a user with the username already exists
+            sql = "SELECT * FROM user WHERE LOWER(username) = LOWER(?)"
+            user = query_db(sql, [username], one=True)
+            if user:
+                error = "This Username already exists"
+            else:
+                #If no user exists
+                sql = "INSERT INTO user (username, password) VALUES (?, ?)"
+                query_db(sql, [username, password])
+                g._database.commit()
+                return redirect(url_for("login", error="Success"))
     return render_template("signup.html", error=error)
 
 @app.route("/logout")
