@@ -132,6 +132,21 @@ def my_lists():
     results = query_db(sql, [current_user_id]) or []
     return render_template("my_lists.html", list=results)
 
+@app.route("/my_lists/delete_list/<int:list_id>", methods=["POST"])
+def delete_list(list_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    db = get_db()
+    current_user_id = session["user_id"]
+    sql = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
+    list_owned = query_db(sql, [list_id, current_user_id], one=True)
+    if list_owned:
+        db.execute("DELETE FROM list_contents WHERE list_id = ?", [list_id])
+        db.execute("DELETE FROM lists WHERE list_id = ?", [list_id])
+        db.commit()
+        return redirect(url_for("my_lists"))
+
+
 # Table Page
 @app.route("/list/<int:list_id>", methods=["GET", "POST"])
 def list_route(list_id=None):

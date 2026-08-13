@@ -46,7 +46,7 @@
 <!--Submit Button-->
 <input type="submit" value="save">
 </form>
-<!--Isolated delete form-->
+<!--Isolated Delete Item from List Form-->
 {% for item in list %}
 <form id="delete-form-{{ item.item_id }}" method="post" action="{{ url_for('delete_item', list_id=list_id, item_id=item.item_id) }}" onsubmit="return confirm('Remove {{ item.item_name }} from list')"></form>
 {% endfor %}
