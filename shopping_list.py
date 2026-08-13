@@ -31,6 +31,7 @@ def query_db(query, args=(), one=False):
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
+# Home Route
 @app.route("/")
 def home():
     if "user_id" in session:
@@ -46,16 +47,17 @@ def login():
         password = request.form["password"]
         sql = "SELECT * FROM user WHERE LOWER(username) = LOWER(?) AND password = ?;"
         user = query_db(sql, [username, password], one=True)
-        #If the user exists
+        # If the user exists
         if user:
             session["user_id"] = user["user_id"]
             session["username"] = user["username"]
             return redirect(url_for("my_lists"))
+        # Else if the values given don't match to the table
         else:
             error = "Invalid Username or Password"
     return render_template("login.html", error=error)
 
-#Sign Up Page
+# Sign Up Page
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     error = ''
@@ -63,14 +65,19 @@ def signup():
         username = request.form["username"]
         password = request.form["password"]
         # Checks the validation for data entry
+        # If no username is inputted
         if username == '':
             error = "Please Enter a Username"
+        # If no signup is inputted
         elif password =='':
             error = "Please Enter a Password"
+        # If username or password has unecessary spaces
         elif username != username.strip() or password != password.strip():
             error = "Username or Password cannot start or end with spaces"
+        # If the length of username is greater than 32
         elif len(username) > 32:
             error = "Username is too long (Maximum 32 characters)"
+        # If password has leass than 8 characters
         elif len(password) < 8:
             error = "Password must be at least 8 characters long"
         else:
@@ -78,15 +85,17 @@ def signup():
             sql = "SELECT * FROM user WHERE LOWER(username) = LOWER(?)"
             user = query_db(sql, [username], one=True)
             if user:
+                # Returns error message when user already exists
                 error = "This Username already exists"
             else:
-                #If no user exists
+                # Inserts signup details if no user exists
                 sql = "INSERT INTO user (username, password) VALUES (?, ?)"
                 query_db(sql, [username, password])
                 g._database.commit()
                 return redirect(url_for("login", error="Success"))
     return render_template("signup.html", error=error)
 
+# Logout route
 @app.route("/logout")
 def logout():
     session.clear()
@@ -95,13 +104,15 @@ def logout():
 # My lists Page
 @app.route("/my_lists", methods=["GET", "POST"])
 def my_lists():
+    # Returns user to login page if not logged in
     if "user_id" not in session:
         return redirect(url_for("login"))
     db = get_db()
     current_user_id = session["user_id"]
-    #Create new list
+    # Create new list
     if request.method == "POST":
         list_name = request.form.get("list_name")
+        # Ensures the List has a name
         if list_name and list_name.strip():  
             cur = db.execute("INSERT INTO lists (list_name, user_id) VALUES (?, ?)", [list_name.strip(), current_user_id])
             db.commit()
@@ -144,8 +155,11 @@ def list_route(list_id=None):
                 cur = db.execute("INSERT INTO item (item_name, catergorisation) VALUES (?, ?)", [item_name, catergorisation])
                 db.commit()
                 item_id = cur.lastrowid
-                cur.close()    
-            if item_quantity and item_id:
+                cur.close()
+            # If item is already present in list
+            sql = "SELECT * FROM list_contents WHERE item_id = ? AND list_id = ?"
+            item_already_exists = query_db(sql, [item_id, list_id], one=True)    
+            if item_quantity and item_id and item_already_exists:
                 # Adds the item into the list if there is the quantity and item_id
                 sql = "INSERT INTO list_contents (list_id, item_id, quantity, ticked) VALUES (?, ?, ?, ?)"
                 query_db(sql, [list_id, item_id, item_quantity, item_ticked])
