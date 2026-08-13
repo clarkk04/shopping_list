@@ -115,6 +115,13 @@ tr:hover td {
 td {
     white-space: nowrap;
 }
+
+.ticked-row td{
+    text-decoration: line-through;
+    color: #888888;
+    background-color: #f9f9f9;
+}
+
 /* Interactive Input */
 form table input[type="checkbox"] {
     transform: scale(1.8);

@@ -89,9 +89,9 @@ def signup():
                 error = "This Username already exists"
             else:
                 # Inserts signup details if no user exists
-                sql = "INSERT INTO user (username, password) VALUES (?, ?)"
-                query_db(sql, [username, password])
-                g._database.commit()
+                db = get_db()
+                db.execute("INSERT INTO user (username, password) VALUES (?, ?)", [username, password])
+                db.commit()
                 return redirect(url_for("login", error="Success"))
     return render_template("signup.html", error=error)
 
@@ -141,10 +141,17 @@ def list_route(list_id=None):
     current_user_id = session["user_id"]
     # When user is adding a new item
     if request.method == "POST":
-            item_name = request.form["item_name"].title()
-            catergorisation = request.form["catergorisation"].title()
-            item_quantity = request.form["quantity"]
-            item_ticked = 1 if request.form.get("ticked") else 0
+            # Save Checkbox ticks
+            checked_ids = request.form.getlist("ticked_items")
+            db.execute("UPDATE list_contents SET ticked = 0 WHERE list_id = ?", [list_id])
+            if checked_ids:
+                placeholder = ",".join("?" for _ in checked_ids)
+                updated_sql = f"UPDATE list_contents SET ticked = 1 WHERE list_id = ? AND item_id IN ({placeholder})"
+                db.execute(updated_sql, [list_id] + [int(i) for i in checked_ids])
+            db.commit()
+            item_name = request.form.get("item_name", "").strip().title()
+            catergorisation = request.form.get("catergorisation", "").strip().title()
+            item_quantity = request.form.get("quantity")
             sql = "SELECT item_id FROM item WHERE item_name = ?"
             item_row = query_db(sql, [item_name], one=True)
             if item_row:
@@ -165,9 +172,11 @@ def list_route(list_id=None):
             item_already_exists = query_db(sql, [item_id, list_id], one=True)    
             if item_quantity and item_id and not item_already_exists:
                 # Adds the item into the list if there is the quantity and item_id
-                sql = "INSERT INTO list_contents (list_id, item_id, quantity, ticked) VALUES (?, ?, ?, ?)"
-                query_db(sql, [list_id, item_id, item_quantity, item_ticked])
-                g._database.commit()
+                db.execute(
+                    "INSERT INTO list_contents (list_id, item_id, quantity) VALUES (?, ?, ?)", 
+                    [list_id, item_id, item_quantity]
+                    )
+                db.commit()
             return redirect(url_for("list_route", list_id=list_id))
     current_list = None
     if list_id:
@@ -201,7 +210,6 @@ def unified_delete(target_type, list_id, item_id=None):
             db.execute("DELETE FROM list_contents WHERE list_id = ?", [list_id])
             db.execute("DELETE FROM lists WHERE list_id = ?", [list_id])
             db.commit()
-            return redirect(url_for("my_lists"))
         # Item Deletion from list
         elif target_type == "item":
             db.execute("DELETE FROM list_contents WHERE list_id = ? AND item_id = ?", [list_id, item_id])

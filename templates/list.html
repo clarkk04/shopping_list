@@ -11,7 +11,7 @@
         <th></th>
     </tr>
     {% for item in list %}
-    <tr>
+    <tr class="{% if item.ticked == 1 %}ticked-row{% endif %}">
         <td>{{ item.item_name }}</td>
         <td>{{ item.quantity }}</td>
         <td>{{ item.catergorisation }}</td>
