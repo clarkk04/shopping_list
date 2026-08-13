@@ -31,6 +31,6 @@
 </form>
 <!--Isolated Delete List Form-->
 {% for contents in list %}
-<form id="delete-list-form-{{ contents.list_id }}" method="post" action="{{ url_for('delete_list', list_id=contents.list_id) }}" onsubmit="return confirm('Are you sure you want to delete')"></form>
+<form id="delete-list-form-{{ contents.list_id }}" method="post" action="{{ url_for('unified_delete', target_type='list', list_id=contents.list_id) }}" onsubmit="return confirm('Are you sure you want to delete')"></form>
 {% endfor %}
 {% endblock  %}

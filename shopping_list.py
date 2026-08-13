@@ -132,21 +132,6 @@ def my_lists():
     results = query_db(sql, [current_user_id]) or []
     return render_template("my_lists.html", list=results)
 
-@app.route("/my_lists/delete_list/<int:list_id>", methods=["POST"])
-def delete_list(list_id):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-    db = get_db()
-    current_user_id = session["user_id"]
-    sql = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
-    list_owned = query_db(sql, [list_id, current_user_id], one=True)
-    if list_owned:
-        db.execute("DELETE FROM list_contents WHERE list_id = ?", [list_id])
-        db.execute("DELETE FROM lists WHERE list_id = ?", [list_id])
-        db.commit()
-        return redirect(url_for("my_lists"))
-
-
 # Table Page
 @app.route("/list/<int:list_id>", methods=["GET", "POST"])
 def list_route(list_id=None):
@@ -200,9 +185,10 @@ def list_route(list_id=None):
         results = []
     return render_template("list.html", list=results, list_id=list_id, current_list=current_list)
 
-# Delete item from list
-@app.route("/list/<int:list_id>/delete_item/<int:item_id>", methods=["POST"])
-def delete_item(list_id, item_id):
+# Unified Deletion Route for Lists and Items
+@app.route("/delete/<string:target_type>/<int:list_id>", methods=["POST"])
+@app.route("/delete/<string:target_type>/<int:list_id>/<int:item_id>", methods=["POST"])
+def unified_delete(target_type, list_id, item_id=None):
     if "user_id" not in session:
         return redirect(url_for("login"))
     db = get_db()
@@ -210,9 +196,18 @@ def delete_item(list_id, item_id):
     sql = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
     list_owned = query_db(sql, [list_id, current_user_id], one=True)
     if list_owned:
-        db.execute("DELETE FROM list_contents WHERE list_id = ? AND item_id = ?", [list_id, item_id])
-        db.commit()
-    return redirect(url_for("list_route", list_id=list_id))
+        # List Deletion
+        if target_type == "list":
+            db.execute("DELETE FROM list_contents WHERE list_id = ?", [list_id])
+            db.execute("DELETE FROM lists WHERE list_id = ?", [list_id])
+            db.commit()
+            return redirect(url_for("my_lists"))
+        # Item Deletion from list
+        elif target_type == "item":
+            db.execute("DELETE FROM list_contents WHERE list_id = ? AND item_id = ?", [list_id, item_id])
+            db.commit()
+            return redirect(url_for("list_route", list_id=list_id))
+    return redirect(url_for("my_lists"))
 
 if __name__ == "__main__":
     app.run(debug=True)
