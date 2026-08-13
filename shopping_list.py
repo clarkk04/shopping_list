@@ -151,11 +151,15 @@ def list_route(list_id=None):
                 # Item exists
                 item_id = item_row["item_id"]
             else:
-                # Inserts item into item table if it doesn't exist
-                cur = db.execute("INSERT INTO item (item_name, catergorisation) VALUES (?, ?)", [item_name, catergorisation])
-                db.commit()
-                item_id = cur.lastrowid
-                cur.close()
+                if item_name and item_name.strip() and catergorisation and catergorisation.strip():
+                    # Inserts item into item table if it doesn't exist
+                    cur = db.execute("INSERT INTO item (item_name, catergorisation) VALUES (?, ?)", [item_name, catergorisation])
+                    db.commit()
+                    item_id = cur.lastrowid
+                    cur.close()
+                else:
+                    # redirects user if item_name or catergorisation is not valid
+                    return redirect(url_for('list_route', list_id=list_id))
             # If item is already present in list
             sql = "SELECT * FROM list_contents WHERE item_id = ? AND list_id = ?"
             item_already_exists = query_db(sql, [item_id, list_id], one=True)    
@@ -169,8 +173,10 @@ def list_route(list_id=None):
     if list_id:
         sql_list = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
         current_list = query_db(sql_list, [list_id, current_user_id], one=True)
+        # Redirects user if list_id and user_id don't match
         if not current_list:
             return redirect(url_for("my_lists"))
+        # Selects all values from list_contents where list_id is equal to the current list
         sql = """SELECT * FROM list_contents
                 JOIN item ON item.item_id=list_contents.item_id
                 WHERE list_contents.list_id = ?;"""
