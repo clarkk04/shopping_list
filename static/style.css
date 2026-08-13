@@ -166,7 +166,6 @@ input[type="submit"]:hover {
     background-color: var(--primary-hover);
 }
 
-input[value="EDIT"],
 a[href*="list_route"],
 a[href*="list/"] {
     color: var(--primary-colour);

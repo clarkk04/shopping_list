@@ -163,7 +163,7 @@ def list_route(list_id=None):
             # If item is already present in list
             sql = "SELECT * FROM list_contents WHERE item_id = ? AND list_id = ?"
             item_already_exists = query_db(sql, [item_id, list_id], one=True)    
-            if item_quantity and item_id and item_already_exists:
+            if item_quantity and item_id and not item_already_exists:
                 # Adds the item into the list if there is the quantity and item_id
                 sql = "INSERT INTO list_contents (list_id, item_id, quantity, ticked) VALUES (?, ?, ?, ?)"
                 query_db(sql, [list_id, item_id, item_quantity, item_ticked])
@@ -184,6 +184,20 @@ def list_route(list_id=None):
     else:
         results = []
     return render_template("list.html", list=results, list_id=list_id, current_list=current_list)
+
+# Delete item from list
+@app.route("/list/<int:list_id>/delete_item/<int:item_id>", methods=["POST"])
+def delete_item(list_id, item_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    db = get_db()
+    current_user_id = session["user_id"]
+    sql = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
+    list_owned = query_db(sql, [list_id, current_user_id], one=True)
+    if list_owned:
+        db.execute("DELETE FROM list_contents WHERE list_id = ? AND item_id = ?", [list_id, item_id])
+        db.commit()
+    return redirect(url_for("list_route", list_id=list_id))
 
 if __name__ == "__main__":
     app.run(debug=True)

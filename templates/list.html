@@ -2,8 +2,8 @@
 {% block body %}
 <h1>{{ current_list.list_name }}</h1>
 <form action="{{ url_for('list_route', list_id=list_id) }}" method="post">
-<table border="1">
-    <tr align="center">
+<table>
+    <tr>
         <th>Item Name</th>
         <th>Quantity</th>
         <th>Catergorisation</th>
@@ -18,18 +18,21 @@
         <td>
             <input name="ticked_items" type="checkbox" value="{{ item.item_id }}" {% if item.ticked == 1 %}checked{% endif %}>
         </td>
-        <td><input type="button" value="EDIT"></td>
+        <!--Delete button-->
+        <td>
+            <input type="submit" value="DELETE" form="delete-form-{{ item.item_id }}">
+        </td>
     </tr>
     {% endfor %}
     <!--Adding New items Row-->
-    <tr align="center">
+    <tr>
         <td>
             <input name="item_name" list="food">
             <datalist id="food">
-            <option value="apple">
-            <option value="pineapple">
+            <option value="apple"></option>
+            <option value="pineapple"></option>
         </td>
-        <td><input type="number" name="quantity" value="1"></td>
+        <td><input type="number" name="quantity" min="1" max="999" value="1"></td>
         <td>
             <input list="food-type" name="catergorisation">
             <datalist id="food-type">
@@ -43,4 +46,8 @@
 <!--Submit Button-->
 <input type="submit" value="save">
 </form>
+<!--Isolated delete form-->
+{% for item in list %}
+<form id="delete-form-{{ item.item_id }}" method="post" action="{{ url_for('delete_item', list_id=list_id, item_id=item.item_id) }}" onsubmit="return confirm('Remove {{ item.item_name }} from list')"></form>
+{% endfor %}
 {% endblock  %}
