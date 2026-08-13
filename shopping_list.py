@@ -194,14 +194,51 @@ def list_route(list_id=None):
         results = []
     return render_template("list.html", list=results, list_id=list_id, current_list=current_list)
 
-# Unified Deletion Route for Lists and Items
-@app.route("/delete/<string:target_type>/<int:list_id>", methods=["POST"])
-@app.route("/delete/<string:target_type>/<int:list_id>/<int:item_id>", methods=["POST"])
-def unified_delete(target_type, list_id, item_id=None):
+# Item Dictionary
+@app.route("/item_dictionary", methods=["GET", "POST"])
+def item_display():
     if "user_id" not in session:
         return redirect(url_for("login"))
     db = get_db()
     current_user_id = session["user_id"]
+    # When user is adding a new item
+    if request.method == "POST":
+        item_name = request.form.get("item_name", "").strip().title()
+        catergorisation = request.form.get("catergorisation", "").strip().title()
+        sql = "SELECT item_id FROM item WHERE item_name = ? AND user_id = ?"
+        item_row = query_db(sql, [item_name, current_user_id], one=True)
+        if item_row:
+            # Item exists
+            item_id = item_row["item_id"]
+        else:
+            if item_name and item_name.strip() and catergorisation and catergorisation.strip():
+                # Inserts item into item table if it doesn't exist
+                cur = db.execute("INSERT INTO item (item_name, catergorisation, user_id) VALUES (?, ?, ?)", [item_name, catergorisation, current_user_id])
+                db.commit()
+                item_id = cur.lastrowid
+                cur.close()
+            else:
+                # redirects user if item_name or catergorisation is not valid
+                return redirect(url_for('item_display'))
+    sql = "SELECT * FROM item WHERE user_id = ?"
+    results = query_db(sql, [current_user_id]) or []
+    return render_template("item_dictionary.html", item_dictionary=results)
+            
+           
+# Unified Deletion Route for Lists and Items
+@app.route("/delete/<string:target_type>/<int:item_id>", methods=["POST"])
+@app.route("/delete/<string:target_type>/<int:list_id>", methods=["POST"])
+@app.route("/delete/<string:target_type>/<int:list_id>/<int:item_id>", methods=["POST"])
+def unified_delete(target_type, list_id=None, item_id=None):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    db = get_db()
+    current_user_id = session["user_id"]
+    if target_type == "item_value":
+        db.execute("DELETE FROM list_contents WHERE item_id = ?", [item_id])
+        db.execute("DELETE FROM item WHERE item_id = ?", [item_id])
+        db.commit()
+        return redirect(url_for("item_display"))
     sql = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
     list_owned = query_db(sql, [list_id, current_user_id], one=True)
     if list_owned:
@@ -212,7 +249,7 @@ def unified_delete(target_type, list_id, item_id=None):
             db.commit()
         # Item Deletion from list
         elif target_type == "item":
-            db.execute("DELETE FROM list_contents WHERE list_id = ? AND item_id = ?", [list_id, item_id])
+            db.execute("DELETE FROM list_contents WHERE list_id = ? AND item_id = ? AND user_id = ?", [list_id, item_id, current_user_id])
             db.commit()
             return redirect(url_for("list_route", list_id=list_id))
     return redirect(url_for("my_lists"))

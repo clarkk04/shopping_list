@@ -13,6 +13,7 @@
             <!--If user is logged in-->
             {% if session.get('user_id') %}
                 <a href="{{ url_for('my_lists')}}">My Lists</a>
+                <a href="{{ url_for('item_display')}}">Items</a>
                 <a>Help</a>
                 <a href="{{ url_for('logout')}}">Account</a>
             {% else %}
