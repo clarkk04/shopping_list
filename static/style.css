@@ -37,7 +37,8 @@ nav {
     flex-wrap: wrap;
 }
 
-nav a {
+nav a,
+nav span {
     color: var(--text-colour);
     text-decoration: none;
     font-weight: 500;
@@ -70,6 +71,51 @@ main, .content-container {
 h1 {
     color: var(--text-colour);
     margin-bottom: 20px;
+}
+/* Login and Signup */
+.login{
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px 40px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-colour);
+    text-align: center;
+}
+
+input[type="text"] {
+    margin-bottom: 15px;
+}
+
+input[type="password"] {
+    width: 100%;
+    max-width: 250px;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid var(--border-colour);
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: #fafbfc;
+    margin-bottom: 15px;
+}
+
+input[type="password"]:focus {
+    border-color: var(--primary-colour);
+    background-color: var(--card-bg);
+    outline: none;
+}
+
+.login a {
+    display: inline-block;
+    margin: 15px 0;
+    color: var(--primary-colour);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login a:hover {
+    text-decoration: underline;
 }
 
 /* Tables */
@@ -112,13 +158,10 @@ tr:hover td {
     background-color: #f1f5f9;
 }
 
-td {
-    white-space: nowrap;
-}
-
-.ticked-row td{
+tr.ticked-row td,
+tr.ticked-row:hover td{
     text-decoration: line-through;
-    color: #88888880;
+    color: #aaaaaa;
     background-color: #f9f9f9;
 }
 
@@ -184,7 +227,7 @@ a[href*="list/"] {
     font-size: 14px;
 }
 
-form input[value="DELETE"] {
+input[value="DELETE"] {
     background-color: transparent;
     color: var(--delete-colour);
     border: 1px solid var(--delete-colour);
@@ -194,7 +237,7 @@ form input[value="DELETE"] {
     cursor: pointer;
 }
 
-form input[value="DELETE"]:hover {
+input[value="DELETE"]:hover {
     background-color: var(--delete-colour);
     color: #ffffff;
 }

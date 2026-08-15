@@ -2,12 +2,14 @@
 {% block body %}
 <div class="login">
     <h1>Login</h1>
-    <form method="post">
+    <form method="post" action="{{ url_for('login') }}">
         <label for="username">Username*</label><br>
-        <input type="text" id="username" name="username" maxlength="32"><br>
-        <lable for="password">Password*</lable><br>
-        <input type="password" id="password" name="password"><br>
-        <p style="color: red; font-size: 24px;">{{ error }}</p>
+        <input type="text" id="username" name="username" maxlength="32" required><br>
+        <label for="password">Password*</label><br>
+        <input type="password" id="password" name="password" required><br>
+        {% if error %}
+        <p style="color: red; font-size: 18px; font-weight: bold;">{{ error }}</p>
+        {% endif %}
         <a href="{{ url_for('signup')}}" style="font-size: 16px;">Sign Up</a><br>      
         <input type="submit" value="Submit">
     </form>

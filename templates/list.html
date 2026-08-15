@@ -1,12 +1,13 @@
 {% extends "index.html" %}
 {% block body %}
+<p><a href="{{ url_for('my_lists') }}" style="text-decoration: none; font-weight: bold;">Back to My Lists</a></p>
 <h1>{{ current_list.list_name }}</h1>
 <form action="{{ url_for('list_route', list_id=list_id) }}" method="post">
 <table>
     <tr>
         <th>Item Name</th>
         <th>Quantity</th>
-        <th>Catergorisation</th>
+        <th>Categorisation</th>
         <th>tick</th>
         <th></th>
     </tr>
@@ -14,7 +15,7 @@
     <tr class="{% if item.ticked == 1 %}ticked-row{% endif %}">
         <td>{{ item.item_name }}</td>
         <td>{{ item.quantity }}</td>
-        <td>{{ item.catergorisation }}</td>
+        <td>{{ item.categorisation }}</td>
         <td>
             <input name="ticked_items" type="checkbox" value="{{ item.item_id }}" {% if item.ticked == 1 %}checked{% endif %}>
         </td>
@@ -31,13 +32,15 @@
             <datalist id="food">
             <option value="apple"></option>
             <option value="pineapple"></option>
+            </datalist>
         </td>
         <td><input type="number" name="quantity" min="1" max="999" value="1"></td>
         <td>
-            <input list="food-type" name="catergorisation">
+            <input list="food-type" name="categorisation">
             <datalist id="food-type">
-            <option value="fruit">
-            <option value="dairy">
+            <option value="fruit"></option>
+            <option value="dairy"></option>
+            </datalist>
         </td>
         <td><input type="checkbox" disabled></td>
         <td></td>

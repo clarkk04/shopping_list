@@ -31,6 +31,13 @@ def query_db(query, args=(), one=False):
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
+# Verification of user login and if they own the requested list
+def verify_list_ownership(list_id):
+    if "user_id" not in session:
+        return None
+    sql = "SELECT * FROM lists where list_id = ? AND user_id = ?"
+    return query_db(sql, [list_id, session["user_id"]], one=True)
+
 # Home Route
 @app.route("/")
 def home():
@@ -92,7 +99,7 @@ def signup():
                 db = get_db()
                 db.execute("INSERT INTO user (username, password) VALUES (?, ?)", [username, password])
                 db.commit()
-                return redirect(url_for("login", error="Success"))
+                return redirect(url_for("login"))
     return render_template("signup.html", error=error)
 
 # Logout route
@@ -135,8 +142,10 @@ def my_lists():
 # Table Page
 @app.route("/list/<int:list_id>", methods=["GET", "POST"])
 def list_route(list_id=None):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    # Uses verification function if user owns list
+    current_list = verify_list_ownership(list_id)
+    if not current_list:
+        return redirect(url_for("my_lists"))
     db = get_db()
     current_user_id = session["user_id"]
     # When user is adding a new item
@@ -150,7 +159,7 @@ def list_route(list_id=None):
                 db.execute(updated_sql, [list_id] + [int(i) for i in checked_ids])
             db.commit()
             item_name = request.form.get("item_name", "").strip().title()
-            catergorisation = request.form.get("catergorisation", "").strip().title()
+            categorisation = request.form.get("categorisation", "").strip().title()
             item_quantity = request.form.get("quantity")
             sql = "SELECT item_id FROM item WHERE item_name = ?"
             item_row = query_db(sql, [item_name], one=True)
@@ -158,35 +167,36 @@ def list_route(list_id=None):
                 # Item exists
                 item_id = item_row["item_id"]
             else:
-                if item_name and item_name.strip() and catergorisation and catergorisation.strip():
+                if item_name and item_name.strip() and categorisation and categorisation.strip():
                     # Inserts item into item table if it doesn't exist
-                    cur = db.execute("INSERT INTO item (item_name, catergorisation) VALUES (?, ?)", [item_name, catergorisation])
+                    cur = db.execute("INSERT INTO item (item_name, categorisation, user_id) VALUES (?, ?, ?)", [item_name, categorisation, current_user_id])
                     db.commit()
                     item_id = cur.lastrowid
                     cur.close()
                 else:
-                    # redirects user if item_name or catergorisation is not valid
+                    # redirects user if item_name or categorisation is not valid
                     return redirect(url_for('list_route', list_id=list_id))
             # If item is already present in list
             sql = "SELECT * FROM list_contents WHERE item_id = ? AND list_id = ?"
             item_already_exists = query_db(sql, [item_id, list_id], one=True)    
-            if item_quantity and item_id and not item_already_exists:
-                # Adds the item into the list if there is the quantity and item_id
-                db.execute(
-                    "INSERT INTO list_contents (list_id, item_id, quantity) VALUES (?, ?, ?)", 
-                    [list_id, item_id, item_quantity]
+            if item_quantity and item_id:
+                if not item_already_exists:
+                    # Adds the item into the list if there is the quantity and item_id
+                    db.execute(
+                        "INSERT INTO list_contents (list_id, item_id, quantity, ticked) VALUES (?, ?, ?, 0)", 
+                        [list_id, item_id, item_quantity]
+                        )
+                else:
+                    db.execute(
+                        "UPDATE list_contents SET quantity = ? WHERE list_id = ? AND item_id = ?",
+                        [item_quantity, list_id, item_id]
                     )
                 db.commit()
             return redirect(url_for("list_route", list_id=list_id))
-    current_list = None
     if list_id:
-        sql_list = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
-        current_list = query_db(sql_list, [list_id, current_user_id], one=True)
-        # Redirects user if list_id and user_id don't match
-        if not current_list:
-            return redirect(url_for("my_lists"))
-        # Selects all values from list_contents where list_id is equal to the current list
-        sql = """SELECT * FROM list_contents
+        # Selects values from list_contents where list_id is equal to the current list
+        sql = """SELECT list_contents.item_id, item.item_name, list_contents.quantity, item.categorisation, list_contents.ticked 
+                FROM list_contents
                 JOIN item ON item.item_id=list_contents.item_id
                 WHERE list_contents.list_id = ?;"""
         results = query_db(sql, [list_id]) or []
@@ -196,7 +206,7 @@ def list_route(list_id=None):
 
 # Item Dictionary
 @app.route("/item_dictionary", methods=["GET", "POST"])
-def item_display():
+def item_dictionary():
     if "user_id" not in session:
         return redirect(url_for("login"))
     db = get_db()
@@ -204,54 +214,55 @@ def item_display():
     # When user is adding a new item
     if request.method == "POST":
         item_name = request.form.get("item_name", "").strip().title()
-        catergorisation = request.form.get("catergorisation", "").strip().title()
+        categorisation = request.form.get("categorisation", "").strip().title()
         sql = "SELECT item_id FROM item WHERE item_name = ? AND user_id = ?"
-        item_row = query_db(sql, [item_name, current_user_id], one=True)
-        if item_row:
+        item_exists = query_db(sql, [item_name, current_user_id], one=True)
+        if item_exists:
             # Item exists
-            item_id = item_row["item_id"]
+            item_id = item_exists["item_id"]
         else:
-            if item_name and item_name.strip() and catergorisation and catergorisation.strip():
+            if item_name and item_name.strip() and categorisation and categorisation.strip():
                 # Inserts item into item table if it doesn't exist
-                cur = db.execute("INSERT INTO item (item_name, catergorisation, user_id) VALUES (?, ?, ?)", [item_name, catergorisation, current_user_id])
+                cur = db.execute("INSERT INTO item (item_name, categorisation, user_id) VALUES (?, ?, ?)", [item_name, categorisation, current_user_id])
                 db.commit()
-                item_id = cur.lastrowid
                 cur.close()
-            else:
-                # redirects user if item_name or catergorisation is not valid
-                return redirect(url_for('item_display'))
-    sql = "SELECT * FROM item WHERE user_id = ?"
+    sql = "SELECT * FROM item WHERE user_id = ? ORDER BY LOWER(categorisation) ASC, LOWER(item_name) ASC;"
     results = query_db(sql, [current_user_id]) or []
     return render_template("item_dictionary.html", item_dictionary=results)
             
            
-# Unified Deletion Route for Lists and Items
-@app.route("/delete/<string:target_type>/<int:item_id>", methods=["POST"])
-@app.route("/delete/<string:target_type>/<int:list_id>", methods=["POST"])
+# Unified Deletion Route for Lists, List Items, and Dictionary Catalog Items
+@app.route("/delete/<string:target_type>/<int:target_id>", methods=["POST"])
 @app.route("/delete/<string:target_type>/<int:list_id>/<int:item_id>", methods=["POST"])
-def unified_delete(target_type, list_id=None, item_id=None):
+def unified_delete(target_type, target_id=None, list_id=None, item_id=None):
     if "user_id" not in session:
         return redirect(url_for("login"))
     db = get_db()
     current_user_id = session["user_id"]
-    if target_type == "item_value":
-        db.execute("DELETE FROM list_contents WHERE item_id = ?", [item_id])
-        db.execute("DELETE FROM item WHERE item_id = ?", [item_id])
-        db.commit()
-        return redirect(url_for("item_display"))
-    sql = "SELECT * FROM lists WHERE list_id = ? AND user_id = ?"
-    list_owned = query_db(sql, [list_id, current_user_id], one=True)
-    if list_owned:
-        # List Deletion
-        if target_type == "list":
-            db.execute("DELETE FROM list_contents WHERE list_id = ?", [list_id])
-            db.execute("DELETE FROM lists WHERE list_id = ?", [list_id])
+    # List Deletion
+    if target_type == "list" and target_id is not None:
+        list_owned = verify_list_ownership(target_id)
+        if list_owned:
+            db.execute("DELETE FROM list_contents WHERE list_id = ?", [target_id])
+            db.execute("DELETE FROM lists WHERE list_id = ?", [target_id])
             db.commit()
-        # Item Deletion from list
-        elif target_type == "item":
-            db.execute("DELETE FROM list_contents WHERE list_id = ? AND item_id = ? AND user_id = ?", [list_id, item_id, current_user_id])
+        return redirect(url_for("my_lists"))
+    # Item Deletion from list
+    elif target_type == "item":
+        list_owned = verify_list_ownership(list_id)
+        if list_owned:
+            db.execute("DELETE FROM list_contents WHERE list_id = ? AND item_id = ?", [list_id, item_id])
             db.commit()
             return redirect(url_for("list_route", list_id=list_id))
+    # Item Deletion from private dictionary
+    elif target_type == "dictionary" and target_id:
+        sql = "SELECT * FROM item WHERE item_id = ? AND user_id = ?"
+        item_owned = query_db(sql, [target_id, current_user_id], one=True)
+        if item_owned:
+            db.execute("DELETE FROM list_contents WHERE item_id = ?", [target_id])
+            db.execute("DELETE FROM item WHERE item_id = ? AND user_id = ?", [target_id, current_user_id])
+            db.commit()
+        return redirect(url_for("item_dictionary"))
     return redirect(url_for("my_lists"))
 
 if __name__ == "__main__":
