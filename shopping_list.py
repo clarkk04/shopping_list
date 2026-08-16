@@ -138,8 +138,7 @@ def signup():
                 # Inserts signup details if no user exists
                 sql = "INSERT INTO user (username, password) VALUES (?, ?)"
                 query_db(sql, [username, password], commit=True)
-                error = "You Successfully Created an Account"
-                return redirect(url_for("login", error=error))
+                return redirect(url_for("login"))
     return render_template("signup.html", error=error)
 
 # Logout route
@@ -225,14 +224,15 @@ def list_route(list_id=None):
                     # If item is already present in list
                     sql = "SELECT * FROM list_contents WHERE item_id = ? AND list_id = ?"
                     item_already_exists = query_db(sql, [item_id, list_id], one=True)
-                    if not item_already_exists:
-                        # Adds the item into the list if there is the quantity and item_id
-                        sql = ("INSERT INTO list_contents (list_id, item_id, quantity, ticked) VALUES (?, ?, ?, 0)")
-                        query_db(sql, [list_id, item_id, item_quantity], commit=True)
+                    if item_already_exists:
+                        # If item already exists in list
+                        error = "Item is already in the list"
                     else:
-                        sql = ("UPDATE list_contents SET quantity = ? WHERE list_id = ? AND item_id = ?")
-                        query_db(sql, [item_quantity, list_id, item_id], commit=True)
-                    return redirect(url_for("list_route", list_id=list_id))
+                        qty = int(item_quantity)
+                        sql = ("INSERT INTO list_contents (list_id, item_id, quantity, ticked) VALUES (?, ?, ?, 0)")
+                        query_db(sql, [list_id, item_id, qty], commit=True)
+                    if not error:
+                        return redirect(url_for("list_route", list_id=list_id))
     if list_id:
         # Selects values from list_contents where list_id is equal to the current list
         sql = """SELECT list_contents.item_id, item.item_name, list_contents.quantity, item.categorisation, list_contents.ticked 
