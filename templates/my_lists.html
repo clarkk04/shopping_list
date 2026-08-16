@@ -1,6 +1,7 @@
 {% extends "index.html" %}
 {% block body %}
 <h1>My Lists</h1>
+{% if list %}
 <table>
     <tr>
         <th>list_name</th>
@@ -23,13 +24,28 @@
     </tr>
     {% endfor %}
 </table>
+{% else %}
+<div class="card empty">
+    <p>You don't have any lists yet. Create one to get started!</p>
+</div>
+{% endif %}
 <br>
-<!--Create New List-->
-<form method="post" action="{{ url_for('my_lists') }}">
-    <input type="text" placeholder="New List" id="list_name" name="list_name"><br>
-    <input type="submit" value="Create List">
-</form>
-<!--Isolated Delete List Form-->
+<!-- Create New List -->
+<div class="card" id="create-list">
+    <h3>Create New List</h3>
+    <form method="post" action="{{ url_for('my_lists') }}">
+        <!-- List Name -->
+        <input type="text" placeholder="Create New List" id="list_name" name="list_name"><br>
+        <p class="guidelines">Maximum 40 characters.</p>
+        <!-- Error Message -->
+        {% if error %}
+        <p class="error-text">{{ error }}</p>
+        {% endif %}
+        <!-- Submit Button -->
+        <input type="submit" value="Create List">
+    </form>
+</div>
+<!-- Isolated Delete List Form -->
 {% for contents in list %}
 <form id="delete-list-form-{{ contents.list_id }}" method="post" action="{{ url_for('unified_delete', target_type='list', target_id=contents.list_id) }}" onsubmit="return confirm('Are you sure you want to delete')"></form>
 {% endfor %}

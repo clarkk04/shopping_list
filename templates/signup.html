@@ -1,16 +1,24 @@
 {% extends "index.html" %}
 {% block body %}
-<div class="login">
+<!-- Signup Form -->
+<div class="login" id="signup-form">
     <h1>Sign Up</h1>
     <form method="post" action="{{ url_for('signup') }}">
+        <!-- Username -->
         <label for="username">Username*</label><br>
-        <input type="text" id="username" name="username" maxlength="32" required><br>
+        <input type="text" id="username" name="username" maxlength="32" placeholder="Enter Username"><br>
+        <p style="color: #64748b; font-size: 13px; margin: 4px 0 15px 0;">Maximum 32 characters. No spaces allowed.</p>
+        <!-- Password -->
         <label for="password">Password*</label><br>
-        <input type="password" id="password" name="password" minlength="8" required><br>
+        <input type="password" id="password" name="password" placeholder="Enter Password"><br>
+        <p style="color: #64748b; font-size: 13px; margin: 4px 0 15px 0;">Minimum 8 characters. No spaces allowed.</p>
+        <!-- Error Message -->
         {% if error %}
-        <p style="color: red; font-size: 18px; font-weight: bold;">{{ error }}</p>
+        <p class="error-text" style="text-align: center;">{{ error }}</p>
         {% endif %}
-        <a href="{{ url_for('login')}}" style="font-size: 16px;">Login</a><br>      
+        <!-- Login Page Link -->
+        <a href="{{ url_for('login')}}" style="font-size: 16px;">Login</a><br>
+        <!-- Submit Button -->
         <input type="submit" value="Submit">
     </form>
 </div>

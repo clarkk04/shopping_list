@@ -1,16 +1,22 @@
 {% extends "index.html" %}
 {% block body %}
-<div class="login">
+<!-- Login Form -->
+<div class="login" id="login-form">
     <h1>Login</h1>
     <form method="post" action="{{ url_for('login') }}">
+        <!-- Username -->
         <label for="username">Username*</label><br>
-        <input type="text" id="username" name="username" maxlength="32" required><br>
+        <input type="text" id="username" name="username" maxlength="32" placeholder="Enter Username"><br>
+        <!-- Password -->
         <label for="password">Password*</label><br>
-        <input type="password" id="password" name="password" required><br>
+        <input type="password" id="password" name="password" placeholder="Enter Password"><br>
+        <!-- Error Message -->
         {% if error %}
-        <p style="color: red; font-size: 18px; font-weight: bold;">{{ error }}</p>
+        <p class="error-text" style="text-align: center;">{{ error }}</p>
         {% endif %}
-        <a href="{{ url_for('signup')}}" style="font-size: 16px;">Sign Up</a><br>      
+        <!-- Sign Up Page Link -->
+        <a href="{{ url_for('signup')}}" style="font-size: 16px;">Sign Up</a><br>
+        <!-- Submit Button -->
         <input type="submit" value="Submit">
     </form>
 </div>

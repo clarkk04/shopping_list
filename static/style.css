@@ -72,6 +72,19 @@ h1 {
     color: var(--text-colour);
     margin-bottom: 20px;
 }
+
+h3 {
+    color: var(--text-colour);
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-colour);
+    box-sizing: border-box;
+}
 /* Login and Signup */
 .login{
     max-width: 400px;
@@ -84,12 +97,9 @@ h1 {
     text-align: center;
 }
 
-input[type="text"] {
-    margin-bottom: 15px;
-}
-
-input[type="password"] {
+input[type="text"], input[list], input[type="password"] {
     width: 100%;
+    max-width: 100%;
     max-width: 250px;
     padding: 10px 12px;
     font-size: 15px;
@@ -116,6 +126,10 @@ input[type="password"]:focus {
 
 .login a:hover {
     text-decoration: underline;
+}
+
+.login input[type="submit"] {
+    width: 100%;
 }
 
 /* Tables */
@@ -164,6 +178,45 @@ tr.ticked-row:hover td{
     color: #aaaaaa;
     background-color: #f9f9f9;
 }
+/*Cards*/
+.empty {
+    padding: 30px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+#create-list, #add-items {
+    padding: 25px;
+    max-width: 400px;
+    width: 100%;
+}
+
+p {
+    color: #64748b;
+    font-size: 16px;
+    margin: 0;
+}
+
+.guidelines {
+    font-size: 13px;
+    margin: 4px 0 15px 0;
+    line-height: 1.5;
+}
+
+label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Error Messages */
+.error-text {
+    color: var(--delete-colour);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 8px 0 15px 0;
+    line-height: 1.4;
+    text-align: left;
+}
 
 /* Interactive Input */
 form table input[type="checkbox"] {
@@ -171,17 +224,6 @@ form table input[type="checkbox"] {
     margin: 10px auto;
     display: block;
     cursor: pointer;
-}
-
-input[type="text"], input[list] {
-    width: 100%;
-    max-width: 250px;
-    padding: 10px 12px;
-    font-size: 15px;
-    border: 1px solid var(--border-colour);
-    border-radius: 6px;
-    box-sizing: border-box;
-    background-color: #fafbfc;
 }
 
 input[type="number"] {

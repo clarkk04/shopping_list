@@ -2,7 +2,8 @@
 {% block body %}
 <p><a href="{{ url_for('my_lists') }}" style="text-decoration: none; font-weight: bold;">Back to My Lists</a></p>
 <h1>{{ current_list.list_name }}</h1>
-<form action="{{ url_for('list_route', list_id=list_id) }}" method="post">
+{% if list %}
+<form action="{{ url_for('list_route', list_id=list_id) }}" method="post" id="checkbox-form">
 <table>
     <tr>
         <th>Item Name</th>
@@ -17,7 +18,8 @@
         <td>{{ item.quantity }}</td>
         <td>{{ item.categorisation }}</td>
         <td>
-            <input name="ticked_items" type="checkbox" value="{{ item.item_id }}" {% if item.ticked == 1 %}checked{% endif %}>
+            <!-- Auto-submit on click checkboxs -->
+            <input name="ticked_items" type="checkbox" value="{{ item.item_id }}" {% if item.ticked == 1 %}checked{% endif %} onchange="document.getElementById('checkbox-form').submit();">
         </td>
         <!--Delete button-->
         <td>
@@ -25,30 +27,44 @@
         </td>
     </tr>
     {% endfor %}
-    <!--Adding New items Row-->
-    <tr>
-        <td>
-            <input name="item_name" list="food">
-            <datalist id="food">
-            <option value="apple"></option>
-            <option value="pineapple"></option>
-            </datalist>
-        </td>
-        <td><input type="number" name="quantity" min="1" max="999" value="1"></td>
-        <td>
-            <input list="food-type" name="categorisation">
-            <datalist id="food-type">
-            <option value="fruit"></option>
-            <option value="dairy"></option>
-            </datalist>
-        </td>
-        <td><input type="checkbox" disabled></td>
-        <td></td>
-    </tr>
 </table>
-<!--Submit Button-->
-<input type="submit" value="save">
 </form>
+{% else %}
+<div class="card empty">
+    <p>This list is currently empty. Add one to get started!</p>
+</div>
+{% endif %}
+    <!--Adding New items Form-->
+<div class="card" id="add-items">
+    <h3>Add Item to List</h3>
+    <form action="{{ url_for('list_route', list_id=list_id) }}" method="post">
+        <!-- Item Name -->
+        <label for="item_name">Item Name</label><br>
+        <input name="item_name" list="food"><br>
+        <p class="guidelines">Maximum 32 characters.</p>
+        <datalist id="food">
+        <option value="Apple"></option>
+        <option value="Pineapple"></option>
+        </datalist>
+        <!-- Quantity -->
+        <label for="quantity">Quantity</label><br>
+        <input type="number" name="quantity" value="1"><br>
+        <p class="guidelines">Enter an amount between 1 and 999.</p>
+        <!-- Item Categorisation -->
+        <label for="item_categorisation">Categorisation</label><br>
+        <input list="food-type" name="categorisation" id="item_categorisation"><br>
+        <p class="guidelines">Maximum 32 characters.</p>
+        <datalist id="food-type">
+        <option value="Fruit"></option>
+        <option value="Dairy"></option>
+        </datalist>
+        {% if error %}
+        <p class="error-text">{{ error }}</p>
+        {% endif %}
+        <!--Submit Button-->
+        <input type="submit" value="save">
+    </form>
+</div>
 <!--Isolated Delete Item from List Form-->
 {% for item in list %}
 <form id="delete-form-{{ item.item_id }}" method="post" action="{{ url_for('unified_delete', target_type='item', list_id=list_id, item_id=item.item_id) }}" onsubmit="return confirm('Remove {{ item.item_name }} from list')"></form>

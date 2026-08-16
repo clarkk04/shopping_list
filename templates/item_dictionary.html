@@ -1,6 +1,7 @@
 {% extends "index.html" %}
 {% block body %}
 <h1>Item Dictionary</h1>
+{% if item_dictionary %}
 <form action="{{ url_for('item_dictionary') }}" method="post">
 <table>
     <tr>
@@ -17,17 +18,31 @@
         </td>
     </tr>
     {% endfor %}
-    <!--Adding New items Row-->
-    <tr>
-        <td><input type="text" name="item_name" id="item_name"></td>
-        <td><input type="text" name="categorisation" id="item_categorisation"></td>
-        <td></td>
-    </tr>
 </table>
-<!--Submit Button-->
-<input type="submit" value="save">
 </form>
+{% else %}
+<div class="card empty">
+    <p>Your item catalog is currently empty. Register your first item below!</p>
+</div>
+{% endif %}
+    <!--Adding New items section-->
+<div class="card" id="add-items">
+    <form action="{{ url_for('item_dictionary') }}" method="post">
+        <h3>Add New Catalog Item</h3>
+        <label for="item_name" style="font-size: 14px; font-weight: 500;">Item Name</label><br>
+        <input type="text" name="item_name" id="item_name"><br>
+        <p class="guidelines">Maximum 32 characters.</p>
+        <label for="item_categorisation" style="font-size: 14px; font-weight: 500;">Categorisation</label><br>
+        <input type="text" name="categorisation" id="item_categorisation"><br>
+        <p class="guidelines">Maximum 32 characters.</p>
+        {% if error %}
+        <p class="error-text">{{ error }}</p>
+        {% endif %}
+        <!--Submit Button-->
+        <input type="submit" value="save">    
+    </form>
+</div>
 {% for item in item_dictionary %}
-<form id="delete-catalog-form-{{ item.item_id }}" method="post" action="{{ url_for('unified_delete', target_type='dictionary', target_id=item.item_id) }}" onsubmit="return confirm('Delete {{ item.item_name }} from dictionary? (this removes it from ALL lists) lists')"></form>
+<form id="delete-catalog-form-{{ item.item_id }}" method="post" action="{{ url_for('unified_delete', target_type='dictionary', target_id=item.item_id) }}" onsubmit="return confirm('Delete {{ item.item_name }} from dictionary? (this removes it from ALL lists)')"></form>
 {% endfor %}
 {% endblock  %}
