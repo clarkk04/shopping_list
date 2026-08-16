@@ -1,8 +1,10 @@
 {% extends "index.html" %}
 {% block body %}
+<!-- My Lists Page -->
 <h1>My Lists</h1>
 {% if list %}
 <table>
+    <!-- Header of Table -->
     <tr>
         <th>list_name</th>
         <th>items total</th>
@@ -11,19 +13,27 @@
         <th>EDIT</th>
         <th>DELETE</th>
     </tr>
+    <!-- Shows stats of lists which belong to User -->
     {% for contents in list %}
     <tr>
+        <!-- List Names -->
         <td>{{ contents.list_name }}</td>
+        <!-- Total Items -->
         <td>{{ contents.total_items }}</td>
+        <!-- Items Gottem -->
         <td>{{ contents.items_gotten }}</td>
+        <!-- Items not Gotten -->
         <td>{{ contents.items_not_gotten }}</td>
+        <!-- Edit Button -->
         <td><a href="{{ url_for('list_route', list_id=contents.list_id)}}">EDIT</a></td>
+        <!-- Delete List -->
         <td>
             <input type="submit" value="DELETE" form="delete-list-form-{{ contents.list_id }}">
         </td>
     </tr>
     {% endfor %}
 </table>
+<!-- Message if there are no lists -->
 {% else %}
 <div class="card empty">
     <p>You don't have any lists yet. Create one to get started!</p>

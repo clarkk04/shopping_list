@@ -9,6 +9,7 @@
 <body>
     <header>
         <nav>
+            <!-- Home Navigation Link -->
             <a href="{{ url_for('home')}}">Shopping List</a>
             <!--If user is logged in-->
             {% if session.get('user_id') %}
@@ -16,12 +17,14 @@
                 <a href="{{ url_for('item_dictionary') }}">Items</a>
                 <span style="color: var(--primary-colour);">Logged in as: <strong>{{ session.get('username') }}</strong></span>
                 <a href="{{ url_for('logout') }}" style="color: var(--delete-colour);">Logout</a>
+                <!-- Displays login and signup links when User is not signed in -->
             {% else %}
                 <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('signup') }}">Sign Up</a>
             {% endif %}
         </nav>
     </header>
+    <!-- Main container -->
     <main class="content-container">
         {% block body %}
         {% endblock %}

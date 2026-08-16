@@ -7,11 +7,11 @@
         <!-- Username -->
         <label for="username">Username*</label><br>
         <input type="text" id="username" name="username" maxlength="32" placeholder="Enter Username"><br>
-        <p style="color: #64748b; font-size: 13px; margin: 4px 0 15px 0;">Maximum 32 characters. No spaces allowed.</p>
+        <p class="guidelines">Maximum 32 characters. No spaces allowed.</p>
         <!-- Password -->
         <label for="password">Password*</label><br>
         <input type="password" id="password" name="password" placeholder="Enter Password"><br>
-        <p style="color: #64748b; font-size: 13px; margin: 4px 0 15px 0;">Minimum 8 characters. No spaces allowed.</p>
+        <p class="guidelines">Minimum 8 characters. No spaces allowed.</p>
         <!-- Error Message -->
         {% if error %}
         <p class="error-text" style="text-align: center;">{{ error }}</p>

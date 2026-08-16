@@ -100,16 +100,19 @@ def home():
 def login():
     error = ''
     if request.method == "POST":
+        # Gets user input from Login Form
         username = request.form["username"]
         password = request.form["password"]
+        # Searches for user with matching login details
         sql = "SELECT * FROM user WHERE LOWER(username) = LOWER(?) AND password = ?;"
         user = query_db(sql, [username, password], one=True)
-        # If the user exists
+        # If the user account details match
         if user:
+            # Records in user Session
             session["user_id"] = user["user_id"]
             session["username"] = user["username"]
             return redirect(url_for("my_lists"))
-        # Else if the values given don't match to the table
+        # Else if the values given don't match return error message
         else:
             error = "Invalid Username or Password"
     return render_template("login.html", error=error)
@@ -119,22 +122,24 @@ def login():
 def signup():
     error = ''
     if request.method == "POST":
+        # Recieves user input from Signup Form
         username = request.form["username"]
         password = request.form["password"]
-        # Runs function to check validity
+        # Runs function to check validity of signup details
         error = check_signup_input(username, password)
         if not error:
             # Checks whether a user with the username already exists
             sql = "SELECT * FROM user WHERE LOWER(username) = LOWER(?)"
             user = query_db(sql, [username], one=True)
             if user:
-                # Returns error message when user already exists
+                # Returns error message when username already exists
                 error = "This Username already exists"
             else:
                 # Inserts signup details if no user exists
                 sql = "INSERT INTO user (username, password) VALUES (?, ?)"
                 query_db(sql, [username, password], commit=True)
-                return redirect(url_for("login"))
+                error = "You Successfully Created an Account"
+                return redirect(url_for("login", error=error))
     return render_template("signup.html", error=error)
 
 # Logout route
@@ -189,14 +194,18 @@ def list_route(list_id=None):
     error = ''
     # When user is adding a new item
     if request.method == "POST":
-            # Save Checkbox ticks
+            # Gets the ids of checked items in the list
             checked_ids = request.form.getlist("ticked_items")
+            # Resets all ticks to not ticked
             sql = "UPDATE list_contents SET ticked = 0 WHERE list_id = ?"
             query_db(sql, [list_id], commit=True)
             if checked_ids:
+                # Gets a string with ? marks based on how many ticked items
                 placeholder = ",".join("?" for _ in checked_ids)
                 updated_sql = f"UPDATE list_contents SET ticked = 1 WHERE list_id = ? AND item_id IN ({placeholder})"
+                # Updates checked items based on list_id and id of checked item
                 query_db(updated_sql, [list_id] + [int(i) for i in checked_ids], commit=True)
+            # Processes if item creation form submitted
             if request.form.get("quantity") is not None:
                 item_name = request.form.get("item_name", "").strip().title()
                 categorisation = request.form.get("categorisation", "").strip().title()
@@ -238,33 +247,29 @@ def list_route(list_id=None):
 # Item Dictionary
 @app.route("/item_dictionary", methods=["GET", "POST"])
 def item_dictionary():
+    # Rdirects User if not logged in
     if "user_id" not in session:
         return redirect(url_for("login"))
     current_user_id = session["user_id"]
     error = ''
     # When user is adding a new item
     if request.method == "POST":
+        # Gets rid of unecessary spaces and adds capitalisation for consistency
         item_name = request.form.get("item_name", "").strip().title()
         categorisation = request.form.get("categorisation", "").strip().title()
-        if not item_name:
-            error = "Please enter an item name"
-        elif len(item_name) > 32:
-            error = "Item name is too long (Maximum 32 characters)"
-        elif not categorisation:
-            error = "Please enter a categorisation"
-        elif len(categorisation) > 32:
-            error = "Categorisation is too long (Maximum 32 characters)"
-        else:
+        # Checks Validity of Item with dummy quantity
+        error = check_item_input(item_name, categorisation, 1)
+        if not error:
             sql = "SELECT item_id FROM item WHERE item_name = ? AND user_id = ?"
             item_exists = query_db(sql, [item_name, current_user_id], one=True)
-            if item_exists:
-                # Item exists
-                item_id = item_exists["item_id"]
+            # Inserts item into item table if it doesn't exist
+            if not item_exists:
+                sql = "INSERT INTO item (item_name, categorisation, user_id) VALUES (?, ?, ?)"
+                query_db(sql, [item_name, categorisation, current_user_id], commit=True)
+                return redirect(url_for('item_dictionary'))
             else:
-                if item_name and item_name.strip() and categorisation and categorisation.strip():
-                    # Inserts item into item table if it doesn't exist
-                    sql = "INSERT INTO item (item_name, categorisation, user_id) VALUES (?, ?, ?)"
-                    query_db(sql, [item_name, categorisation, current_user_id], commit=True)
+                error = "This item already exists in your dictionary"
+    # Fixed Ordering of categorisation and item name
     sql = "SELECT * FROM item WHERE user_id = ? ORDER BY LOWER(categorisation) ASC, LOWER(item_name) ASC;"
     results = query_db(sql, [current_user_id]) or []
     return render_template("item_dictionary.html", item_dictionary=results, error=error)
@@ -279,23 +284,29 @@ def unified_delete(target_type, target_id=None, list_id=None, item_id=None):
     current_user_id = session["user_id"]
     # List Deletion
     if target_type == "list" and target_id is not None:
+        # Checks if user owns the list
         list_owned = verify_list_ownership(target_id)
         if list_owned:
+            # Deletes all items in the list and deletes the list itself
             query_db("DELETE FROM list_contents WHERE list_id = ?", [target_id], commit=True)
             query_db("DELETE FROM lists WHERE list_id = ?", [target_id], commit=True)
         return redirect(url_for("my_lists"))
     # Item Deletion from list
     elif target_type == "item":
+        # Checks if user owns the list
         list_owned = verify_list_ownership(list_id)
         if list_owned:
+            # Deletes item from singular list
             sql="DELETE FROM list_contents WHERE list_id = ? AND item_id = ?"
             query_db(sql, [list_id, item_id], commit=True)
             return redirect(url_for("list_route", list_id=list_id))
     # Item Deletion from private dictionary
     elif target_type == "dictionary" and target_id:
+        # Checks if user_id matches with the item up for deletion
         sql = "SELECT * FROM item WHERE item_id = ? AND user_id = ?"
         item_owned = query_db(sql, [target_id, current_user_id], one=True)
         if item_owned:
+            # Deletes item from all lists and item_dictionary with matching user_id
             query_db("DELETE FROM list_contents WHERE item_id = ?", [target_id], commit=True)
             query_db("DELETE FROM item WHERE item_id = ? AND user_id = ?", [target_id, current_user_id], commit=True)
         return redirect(url_for("item_dictionary"))

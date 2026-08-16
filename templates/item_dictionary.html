@@ -1,18 +1,24 @@
 {% extends "index.html" %}
 {% block body %}
+<!-- Item Dictionary Page -->
 <h1>Item Dictionary</h1>
 {% if item_dictionary %}
 <form action="{{ url_for('item_dictionary') }}" method="post">
 <table>
+    <!-- Header Row -->
     <tr>
         <th>Item Name</th>
         <th>Categorisation</th>
         <th>DELETE</th>
     </tr>
+    <!-- Displays All Items in Item Dictionary linking with user_id -->
     {% for item in item_dictionary %}
     <tr>
+        <!-- Item Name -->
         <td>{{ item.item_name }}</td>
+        <!-- Item Categorisation -->
         <td>{{ item.categorisation }}</td>
+        <!-- Delete Item from Catalog -->
         <td>
             <input type="submit" value="DELETE" form="delete-catalog-form-{{ item.item_id }}">
         </td>
@@ -20,28 +26,32 @@
     {% endfor %}
 </table>
 </form>
+<!-- If there is no Items Registered with the User-->
 {% else %}
 <div class="card empty">
     <p>Your item catalog is currently empty. Register your first item below!</p>
 </div>
 {% endif %}
-    <!--Adding New items section-->
+    <!-- Adding New items section -->
 <div class="card" id="add-items">
     <form action="{{ url_for('item_dictionary') }}" method="post">
         <h3>Add New Catalog Item</h3>
-        <label for="item_name" style="font-size: 14px; font-weight: 500;">Item Name</label><br>
+        <!-- Item Name -->
+        <label for="item_name">Item Name</label><br>
         <input type="text" name="item_name" id="item_name"><br>
         <p class="guidelines">Maximum 32 characters.</p>
-        <label for="item_categorisation" style="font-size: 14px; font-weight: 500;">Categorisation</label><br>
+        <label for="item_categorisation">Categorisation</label><br>
         <input type="text" name="categorisation" id="item_categorisation"><br>
         <p class="guidelines">Maximum 32 characters.</p>
+        <!-- Error Message -->
         {% if error %}
         <p class="error-text">{{ error }}</p>
         {% endif %}
-        <!--Submit Button-->
+        <!-- Submit Button -->
         <input type="submit" value="save">    
     </form>
 </div>
+<!-- Isolated Delete Form -->
 {% for item in item_dictionary %}
 <form id="delete-catalog-form-{{ item.item_id }}" method="post" action="{{ url_for('unified_delete', target_type='dictionary', target_id=item.item_id) }}" onsubmit="return confirm('Delete {{ item.item_name }} from dictionary? (this removes it from ALL lists)')"></form>
 {% endfor %}

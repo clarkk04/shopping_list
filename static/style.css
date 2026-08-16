@@ -37,8 +37,10 @@ nav {
     flex-wrap: wrap;
 }
 
+/* Navigation Related Contents */
 nav a,
-nav span {
+nav span,
+p a {
     color: var(--text-colour);
     text-decoration: none;
     font-weight: 500;
@@ -50,6 +52,11 @@ nav span {
 nav a:hover {
     background-color: var(--bg-colour);
     color: var(--primary-colour);
+}
+
+p a:hover {
+    background-color: var(--card-bg);
+    color: var(--primary-hover);
 }
 
 /* Logo Link */
@@ -85,6 +92,7 @@ h3 {
     border: 1px solid var(--border-colour);
     box-sizing: border-box;
 }
+
 /* Login and Signup */
 .login{
     max-width: 400px;
@@ -100,7 +108,6 @@ h3 {
 input[type="text"], input[list], input[type="password"] {
     width: 100%;
     max-width: 100%;
-    max-width: 250px;
     padding: 10px 12px;
     font-size: 15px;
     border: 1px solid var(--border-colour);
@@ -116,6 +123,7 @@ input[type="password"]:focus {
     outline: none;
 }
 
+/* Login / Signup Links (not in nav) */
 .login a {
     display: inline-block;
     margin: 15px 0;
@@ -147,6 +155,7 @@ table, th, td {
     border: none;
 }
 
+/* Table Header */
 th {
     background-color: #edf2f7;
     color: #4a5568;
@@ -178,25 +187,27 @@ tr.ticked-row:hover td{
     color: #aaaaaa;
     background-color: #f9f9f9;
 }
-/*Cards*/
+/* Absence of Table */
 .empty {
     padding: 30px;
     text-align: center;
     margin: 20px 0;
 }
-
+/* User input Cards */
 #create-list, #add-items {
     padding: 25px;
     max-width: 400px;
     width: 100%;
+    box-sizing: border-box;
 }
 
+/* Base word scale */
 p {
     color: #64748b;
     font-size: 16px;
     margin: 0;
 }
-
+/* Text of User Input Restrictions */
 .guidelines {
     font-size: 13px;
     margin: 4px 0 15px 0;

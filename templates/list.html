@@ -1,10 +1,13 @@
 {% extends "index.html" %}
 {% block body %}
+<!-- Link to My Lists Page -->
 <p><a href="{{ url_for('my_lists') }}" style="text-decoration: none; font-weight: bold;">Back to My Lists</a></p>
+<!-- Current List Name -->
 <h1>{{ current_list.list_name }}</h1>
 {% if list %}
 <form action="{{ url_for('list_route', list_id=list_id) }}" method="post" id="checkbox-form">
 <table>
+    <!-- Header of Table -->
     <tr>
         <th>Item Name</th>
         <th>Quantity</th>
@@ -12,6 +15,7 @@
         <th>tick</th>
         <th></th>
     </tr>
+    <!-- Displays all Items in the List -->
     {% for item in list %}
     <tr class="{% if item.ticked == 1 %}ticked-row{% endif %}">
         <td>{{ item.item_name }}</td>
@@ -21,7 +25,7 @@
             <!-- Auto-submit on click checkboxs -->
             <input name="ticked_items" type="checkbox" value="{{ item.item_id }}" {% if item.ticked == 1 %}checked{% endif %} onchange="document.getElementById('checkbox-form').submit();">
         </td>
-        <!--Delete button-->
+        <!-- Delete button -->
         <td>
             <input type="submit" value="DELETE" form="delete-form-{{ item.item_id }}">
         </td>
@@ -29,12 +33,13 @@
     {% endfor %}
 </table>
 </form>
+<!-- If there is nothing in the list displays a user friendly message -->
 {% else %}
 <div class="card empty">
     <p>This list is currently empty. Add one to get started!</p>
 </div>
 {% endif %}
-    <!--Adding New items Form-->
+    <!-- Adding New items Form -->
 <div class="card" id="add-items">
     <h3>Add Item to List</h3>
     <form action="{{ url_for('list_route', list_id=list_id) }}" method="post">
@@ -58,14 +63,15 @@
         <option value="Fruit"></option>
         <option value="Dairy"></option>
         </datalist>
+        <!-- Error Message -->
         {% if error %}
         <p class="error-text">{{ error }}</p>
         {% endif %}
-        <!--Submit Button-->
+        <!-- Submit Button -->
         <input type="submit" value="save">
     </form>
 </div>
-<!--Isolated Delete Item from List Form-->
+<!-- Isolated Delete Item from List Form -->
 {% for item in list %}
 <form id="delete-form-{{ item.item_id }}" method="post" action="{{ url_for('unified_delete', target_type='item', list_id=list_id, item_id=item.item_id) }}" onsubmit="return confirm('Remove {{ item.item_name }} from list')"></form>
 {% endfor %}
